@@ -7,6 +7,7 @@ import org.apache.logging.log4j.Logger;
 import br.com.ucs.firecombat.constants.MatrixConstants;
 
 
+
 public class Matrix {
 	private static final Logger logger = 
 			LogManager.getLogger(Matrix.class);
@@ -48,5 +49,52 @@ public class Matrix {
 			}
 		}
 		return true;
+	}
+
+	public int[] findObjects(int x, int y, int type){
+		logger.info("findObjects() - " + type);
+
+		int[] xa = {0,1,0,-1,0,1,1,-1,-1};
+		int[] ya = {0,0,-1,0,1,1,-1,-1,1};
+
+		int[] objectAddress = new int[3];
+
+		for(int i = 0; i < xa.length; i++){
+
+			int newDestinyX = x + xa[i];
+			int newDestinyY = y + ya[i];
+
+			if(newDestinyX < 0 || newDestinyX >= MatrixConstants.MATRIXSIZE){
+				continue;
+			}
+
+			if(newDestinyY < 0 || newDestinyY >= MatrixConstants.MATRIXSIZE){
+				continue;
+			}
+
+			objectAddress[0] = newDestinyX;
+			objectAddress[1] = newDestinyY;
+			objectAddress[2] = matrix[newDestinyX][newDestinyY];
+			/*
+				type 1 procura por fogo.
+				type 2 procura por vitimas
+			 */
+			if(type == 1){
+				if(matrix[newDestinyX][newDestinyY] >= 1
+						&& matrix[newDestinyX][newDestinyY] <= 100){
+					logger.info("findObjects() - found fire ");
+					return objectAddress;
+				}
+			}else if(type == 2){
+				if(matrix[newDestinyX][newDestinyY] >= 101
+						&& matrix[newDestinyX][newDestinyY] <= 200){
+					logger.info("findObjects() - found vitima");
+					return objectAddress;
+				}
+			}
+		}
+		logger.info("findObjects() - free");
+
+		return null;
 	}
 }
