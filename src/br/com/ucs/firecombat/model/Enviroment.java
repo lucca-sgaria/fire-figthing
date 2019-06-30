@@ -2,12 +2,15 @@ package br.com.ucs.firecombat.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+
 import br.com.ucs.firecombat.constants.MatrixConstants;
+import sun.awt.Mutex;
 
 public class Enviroment {
 	private static final Logger logger =
@@ -104,15 +107,34 @@ public class Enviroment {
 		return existsIn;
 	}
 	
+	public int[] findObject(Firefighter firefighter) {
+		logger.info("findObject()-firefighter-"+firefighter.toString());
+		int[] obj = matrix.findObjects(firefighter.getX(), firefighter.getY(), 5);
+		logger.info("findObject()-object-end-x=" + obj[0] +",y="+obj[1]+",id="+obj[2]);
+		return obj;
+	}
+	
+	public Fire findFire(int threadId) {
+		logger.info("findFire()-fireId-"+threadId);
+		Optional<Fire> findFirst = fires.stream().filter(f -> f.getThreadId() == threadId).findFirst();
+		Fire fire = null;
+		try {
+			fire = findFirst.get();
+			logger.info("findFire()-fire-"+fire.toString());
+		} catch (Exception e) {
+			logger.error("e" + e.getMessage());
+		}
+		return fire;
+	}
+	
+	public void start() {
+		init();
+	}
 	public List<Fire> getFires() {
 		return fires;
 	}
 	public void setFires(List<Fire> fires) {
 		this.fires = fires;
-	}
-
-	public void start() {
-		init();
 	}
 
 	public Matrix getMatrix() {
