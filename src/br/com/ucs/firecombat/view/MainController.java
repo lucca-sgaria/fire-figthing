@@ -4,6 +4,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import br.com.ucs.firecombat.main.AppMain;
+import br.com.ucs.firecombat.model.Enviroment;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -24,23 +25,20 @@ public class MainController implements Initializable {
 	@FXML
 	private Button start;
 
-	private AppMain app = new AppMain();
+//	private AppMain app = new AppMain();
+	private Enviroment env;
 
 	@FXML
 	void startClicked(ActionEvent event) {
-		try {
-			app.start();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+			env.start();
 	}
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 //		testShowImages();
-
-		app.registerFireAddedListener(fire -> {
+		env = new Enviroment();
+		
+		env.getListeners().registerFireAddedListener(fire -> {
 			System.out.println("going put a fire in x=" + fire.getX() + ",y=" + fire.getY());
 			Platform.runLater(new Runnable() {
 				@Override
@@ -50,7 +48,7 @@ public class MainController implements Initializable {
 			});
 		});
 
-		app.registerFireRemovedListener((x, y) -> {
+		env.getListeners().registerFireRemovedListener((x, y) -> {
 			System.out.println("going remove a fire in x=" + x + ",y=" + y);
 			Platform.runLater(new Runnable() {
 				@Override

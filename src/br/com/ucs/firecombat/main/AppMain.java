@@ -5,11 +5,16 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.Semaphore;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import br.com.ucs.firecombat.listener.FireAddedListener;
 import br.com.ucs.firecombat.listener.FireRemovedListener;
 import br.com.ucs.firecombat.model.Fire;
 
 public class AppMain {
+	private static final Logger logger = 
+			LogManager.getLogger(AppMain.class);
 
 	public static int[][] MATRIX = new int[5][5];
 	
@@ -30,10 +35,11 @@ public class AppMain {
 	}
 
 	public void start() throws InterruptedException {
-		System.out.println("beggining");
+		logger.info("started");
 		Fire fireOne = new Fire(1,this, semWriteToMatrix);
 		Fire fireTwo = new Fire(2,this, semWriteToMatrix);
 		Fire fireThree = new Fire(3,this, semWriteToMatrix);
+		
 		fireOne.start();
 		fireTwo.start();
 		fireThree.start();
@@ -86,22 +92,18 @@ public class AppMain {
 	}
 
 	protected void notifyFireAddedListeners(Fire fire) {
-		// Notify each of the listeners in the list of registered listeners
 		this.addedListeners.forEach(listener -> listener.onFireAdded(fire));
 	}
 	
 	protected void notifyFireRemovedListeners(int x,int y) {
-		// Notify each of the listeners in the list of registered listeners
 		this.removedListeners.forEach(listener -> listener.onFireRemoved(x,y));
 	}
 	
     public void registerFireAddedListener (FireAddedListener listener) {
-        // Add the listener to the list of registered listeners
         this.addedListeners.add(listener);
     }
     
     public void registerFireRemovedListener (FireRemovedListener listener) {
-        // Add the listener to the list of registered listeners
         this.removedListeners.add(listener);
     }
 
