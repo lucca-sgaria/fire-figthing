@@ -77,6 +77,7 @@ public class Fire extends Thread {
 				sleep(5000);
 			} else {
 				environment.cleanPosition(x, y, threadId);
+				break;
 			}
 		}
 		

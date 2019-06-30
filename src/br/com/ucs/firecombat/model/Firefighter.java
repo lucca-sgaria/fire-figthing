@@ -57,16 +57,15 @@ public class Firefighter extends Thread {
 					// procura fogo
 					// se achou muda estado
 					int[] obj = environment.findObject(this);
-					System.out.println("obj " + obj[0]);
+					System.out.println("obj " + obj[2]);
 					if (obj[2] == 0) {
 						// n achou nada
 						// procura um lugar
-					} else if (obj[2] >= 1 && obj[2] >= 100) {
+					} else if (obj[2] >= 1 && obj[2] <= 100) {
 						// achou vitima
-					} else if (obj[2] >= 101 && obj[2] >= 200) {
+					} else if (obj[2] >= 101 && obj[2] <= 200) {
 						// achou fogo
 						Fire findFire = environment.findFire(obj[2]);
-						sleep(5000);
 						findFire.putOutFire();
 					}
 					sleep(5000);
