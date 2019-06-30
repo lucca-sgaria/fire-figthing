@@ -10,9 +10,9 @@ import org.apache.logging.log4j.Logger;
 import br.com.ucs.firecombat.constants.MatrixConstants;
 
 public class Enviroment {
-	private static final Logger logger = 
+	private static final Logger logger =
 			LogManager.getLogger(Enviroment.class);
-	
+
 	public static void main(String[] args) {
 		Enviroment env = new Enviroment();
 		env.init();
