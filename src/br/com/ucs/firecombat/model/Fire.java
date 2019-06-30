@@ -50,65 +50,36 @@ public class Fire extends Thread {
 		
 		while (true) {
 			logger.info("run()-iteration-"+iterations+"-"+this.toString());
-			if(life == 0 || iterations == 1) {
-				System.out.println("run()-"+threadId + " is waiting for a permit."); 
-				semWriteToMatrix.acquire();
-				System.out.println("run()-"+threadId + " gets a permit."); 
-				
-				if(iterations > 1) {
-					environment.cleanPosition(x, y);
-					life = 5;
-					logger.info("run()-life restored-"+this.toString());
-				}
-				while (true) {
-					boolean inserted = changeLocation();
-					if (inserted) {
-						break;
+			if(life  >0) {
+				if(iterations == 1) {
+					System.out.println("run()-"+threadId + " is waiting for a permit."); 
+					semWriteToMatrix.acquire();
+					System.out.println("run()-"+threadId + " gets a permit."); 
+					
+//					if(iterations > 1) {
+//						environment.cleanPosition(x, y, threadId);
+//						life = 5;
+//						logger.info("run()-life restored-"+this.toString());
+//					}
+					while (true) {
+						boolean inserted = changeLocation();
+						if (inserted) {
+							break;
+						}
 					}
+					sleep(5000);
+					logger.info("run()-thread-" +threadId + " releases the permit.");
+					semWriteToMatrix.release();
 				}
+				
+//				life--;
+				iterations++;
 				sleep(5000);
-				logger.info("run()-thread-" +threadId + " releases the permit.");
-				semWriteToMatrix.release();
+			} else {
+				environment.cleanPosition(x, y, threadId);
 			}
-			life--;
-			iterations++;
-			sleep(5000);
 		}
 		
-		
-//			int i = 0;
-//
-//			while (i < 5) {
-//				System.out.println("=======================================");
-//				System.out.println("Threadid = " +threadId+" running " + i);
-//				boolean inserted = false;
-//				System.out.println(threadId + " is waiting for a permit."); 
-//				semWriteToMatrix.acquire();
-//				System.out.println(threadId + " gets a permit."); 
-//				while (true) {
-//					inserted = changeLocation();
-//					
-//					if (inserted) {
-//						break;
-//					}
-//				}
-//				
-//				System.out.println(threadId + " releases the permit.");
-//				semWriteToMatrix.release();
-//				System.out.println("Fire " + threadId + " burning on x = " + x + ", y= " + y + ", iteration=" + i);
-//				
-//
-//				main.printIn();
-//				try {
-//					sleep(5000);
-//				} catch (InterruptedException e) {
-//					e.printStackTrace();
-//				}
-//				main.cleanPosition(x, y);
-//				
-//				i++;
-//				System.out.println("=======================================");
-//			}
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
@@ -175,6 +146,12 @@ public class Fire extends Thread {
 
 	public void setLife(int life) {
 		this.life = life;
+	}
+
+	public void putOutFire() {
+		logger.info("putOutFire-fire-"+this.toString());
+		life=0;
+		logger.info("putOutFire-fire-end-"+this.toString());
 	}
 	
 	

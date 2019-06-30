@@ -6,8 +6,6 @@ import org.apache.logging.log4j.Logger;
 
 import br.com.ucs.firecombat.constants.MatrixConstants;
 
-
-
 public class Matrix {
 	private static final Logger logger = 
 			LogManager.getLogger(Matrix.class);
@@ -29,6 +27,10 @@ public class Matrix {
 
 	public void insertFire(Fire fire) {
 		matrix[fire.getX()][fire.getY()] = fire.getThreadId();
+	}
+	
+	public void insertFireFighter(Firefighter firefighter) {
+		matrix[firefighter.getX()][firefighter.getY()] = firefighter.getThreadId();
 	}
 	
 	public void cleanPosition(int x, int y) {
@@ -100,7 +102,6 @@ public class Matrix {
             }
 		}
 		logger.info("findObjects() - free");
-
-		return null;
+		return objectAddress;
 	}
 }

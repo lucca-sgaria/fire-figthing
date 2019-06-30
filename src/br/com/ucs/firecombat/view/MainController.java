@@ -57,13 +57,39 @@ public class MainController implements Initializable {
 				}
 			});
 		});
+		
+		env.getListeners().registerFireFighterAddedListener(firefighter -> {
+			System.out.println("going put a firefighter in x=" + firefighter.getX() + ",y=" + firefighter.getY());
+			Platform.runLater(new Runnable() {
+				@Override
+				public void run() {
+					addFirefighterInGrid(firefighter.getX(), firefighter.getY());
+				}
+			});
+		});
+
+		env.getListeners().registerFireFighterRemovedListener((x, y) -> {
+			System.out.println("going remove a firefighter in x=" + x + ",y=" + y);
+			Platform.runLater(new Runnable() {
+				@Override
+				public void run() {
+					removeImageInGrid(x, y);
+				}
+			});
+		});
 
 	}
-
 	private void removeImageInGrid(int x, int y) {
 		ImageView whiteImageView = getWhiteImageView();
 		grid.add(whiteImageView, y, x);
 		System.out.println("removed fire in the grid");
+	}
+	
+	protected void addFirefighterInGrid(int x, int y) {
+		Image imageFire = new Image("resources/firefighter.jpg");
+		ImageView imageView = new ImageView(imageFire);
+		grid.add(imageView, y, x);
+		System.out.println("put firefighter in the grid");
 	}
 
 	private void addFireInGrid(int x, int y) {

@@ -22,9 +22,12 @@ public class Enviroment {
 	}
 	
 	private List<Fire> fires;
+	private List<Firefighter> firefighters;
+	
 	private Matrix matrix;
 	private Semaphores semaphores;
 	private Listeneres listeners;
+	
 	
 	public Enviroment() {
 		configureListeners();
@@ -36,9 +39,15 @@ public class Enviroment {
 		configureMatrix();
 		configureSemaphores();
 		generateFirstFires();
-		
+		generateFirstFighters();
+	
 		for (Fire fire : fires) {
 			fire.start();
+		}
+		
+		for (Firefighter firefighter : firefighters) {
+			System.out.println("aaa");
+			firefighter.start();
 		}
 	}
 
@@ -70,11 +79,26 @@ public class Enviroment {
 		logger.info("generateFirstFires()-fireamount-" +fireamount);
 		
 		for (int i = 1; i <= fireamount; i++) {
-			Fire e = new Fire(i, null, semaphores.getSemWriteToMatrix(),this);
+			int id = i+100;
+			Fire e = new Fire(id, null, semaphores.getSemWriteToMatrix(),this);
 			fires.add(e);
 			logger.info("init()-created fire-" +e.toString());
 		}
 		logger.info("generateFirstFires()-end");
+	}
+	
+	private void generateFirstFighters() {
+		this.firefighters = new ArrayList<Firefighter>();
+		int firefightersAmount = MatrixConstants.FIREFIGHTERSAMOUNT;
+		logger.info("generateFirstFighters()-firefighter-" +firefightersAmount);
+		
+		for (int i = 1; i <= firefightersAmount; i++) {
+			int id = i+1000;
+			Firefighter e = new Firefighter(id, semaphores.getSemWriteToMatrix(),this);
+			firefighters.add(e);
+			logger.info("init()-created firefighter-" +e.toString());
+		}
+		logger.info("generateFirstFighters()-end");
 	}
 	
 	public int generateRandom() {
@@ -92,11 +116,25 @@ public class Enviroment {
 		logger.info("insertFire()-end");
 	}
 	
+	public void insertFireFighter(Firefighter firefighter) {
+		logger.info("insertFireFighter()-"+firefighter.toString());
+		matrix.insertFireFighter(firefighter);
+		listeners.notifyFireFighterAddedListeners(firefighter);
+		logger.info("insertFireFighter()-end");
+	}
 	
-	public void cleanPosition(int x, int y) {
+	
+	public void cleanPosition(int x, int y,int threadId) {
 		logger.info("cleanPosition()-x=" + x + ",y=" + y);
 		matrix.cleanPosition(x, y);
-		listeners.notifyFireRemovedListeners(x,y);
+		if(threadId >= 100 && threadId <= 201) {
+			listeners.notifyFireRemovedListeners(x,y);
+		}
+		
+		if(threadId >= 1000 && threadId <= 1999) {
+			listeners.notifyFireFighterRemovedListeners(x, y);
+		}
+		
 		logger.info("cleanPosition()-end");
 	}
 	
@@ -108,8 +146,15 @@ public class Enviroment {
 	}
 	
 	public int[] findObject(Firefighter firefighter) {
-		logger.info("findObject()-firefighter-"+firefighter.toString());
+		logger.info("findObjectaaaaaaaaa()-firefighter-"+firefighter.toString());
 		int[] obj = matrix.findObjects(firefighter.getX(), firefighter.getY(), 5);
+		
+		if(obj[2] == firefighter.getThreadId()) {
+			obj[0] = 0;
+			obj[1] = 0;
+			obj[2] = 0;
+		}
+		
 		logger.info("findObject()-object-end-x=" + obj[0] +",y="+obj[1]+",id="+obj[2]);
 		return obj;
 	}
@@ -160,6 +205,8 @@ public class Enviroment {
 	public void setListeners(Listeneres listeners) {
 		this.listeners = listeners;
 	}
+
+
 	
 	
 	
