@@ -91,7 +91,13 @@ public class Matrix {
 					logger.info("findObjects() - found vitima");
 					return objectAddress;
 				}
-			}
+			}else if(type == 5){
+                if(matrix[newDestinyX][newDestinyY] >= 1
+                        && matrix[newDestinyX][newDestinyY] <= 200){
+                    logger.info("findObjects() - found something");
+                    return objectAddress;
+                }
+            }
 		}
 		logger.info("findObjects() - free");
 
