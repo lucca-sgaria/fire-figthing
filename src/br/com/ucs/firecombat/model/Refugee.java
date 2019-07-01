@@ -52,18 +52,25 @@ public class Refugee extends Thread {
 
                 for(int i = 1; i <= MatrixConstants.REFUGEE_AMOUNT; i++){
 
-                    // procura fogo
-                    // se achou muda estado
-                    int[] obj = environment.findF(this);
-                    if(obj[0] != 0){
-                        System.out.println("está pegando fogo");
-                    }
-
                     //semWriteToMatrix.acquire();
 
                     environment.cleanPosition(getX(),getY(),MatrixConstants.REFUGEE_INTERVAL_VALUES + i);
                     while (true){
-                        if(firstLocation()) break;
+                        int[] nextStep = environment.getNextStep(x, y);
+                        if(nextStep[0] != -1) {
+                            environment.cleanPosition(x, y, threadId);
+                            this.x = nextStep[0];
+                            this.y = nextStep[1];
+                            environment.insertRefugee(this);
+                            break;
+                        }
+                    }
+
+                    // procura fogo
+                    // se achou muda estado
+                    int[] obj = environment.findF(this);
+                    if(obj[2] >= 1 && obj[2] <=100){
+                        System.out.println("está pegando fogo");
                     }
 
 
