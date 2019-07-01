@@ -3,14 +3,12 @@ package br.com.ucs.firecombat.view;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import br.com.ucs.firecombat.main.AppMain;
+import br.com.ucs.firecombat.constants.Params;
 import br.com.ucs.firecombat.model.Enviroment;
 import javafx.application.Platform;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -78,6 +76,17 @@ public class MainController implements Initializable {
 			});
 		});
 
+		env.getListeners().registerRefugeeAddedListener(refugee -> {
+				Platform.runLater(() ->
+						addRefugeeInGrid(refugee.getX(),refugee.getY()));
+		});
+
+		env.getListeners().registerRefugeeRemovedListener((x, y) -> {
+				Platform.runLater(() ->
+						removeImageInGrid(x,y));
+		});
+
+
 	}
 	private void removeImageInGrid(int x, int y) {
 		ImageView whiteImageView = getWhiteImageView();
@@ -86,25 +95,32 @@ public class MainController implements Initializable {
 	}
 	
 	protected void addFirefighterInGrid(int x, int y) {
-		Image imageFire = new Image("resources/firefighter.jpg");
-		ImageView imageView = new ImageView(imageFire);
+		Image imageFireFighter = new Image(Params.PATH_IMAGE_FIREFIGHTER);
+		ImageView imageView = new ImageView(imageFireFighter);
 		grid.add(imageView, y, x);
 		System.out.println("put firefighter in the grid");
 	}
 
 	private void addFireInGrid(int x, int y) {
-		Image imageFire = new Image("resources/fire.jpg");
+		Image imageFire = new Image(Params.PATH_IMAGE_FIRE);
 		ImageView imageView = new ImageView(imageFire);
 		grid.add(imageView, y, x);
 		System.out.println("put fire in the grid");
 	}
 
+	private void addRefugeeInGrid(int x, int y){
+		Image imageRefugee = new Image(Params.PATH_IMAGE_REFUGEE);
+		ImageView imageView = new ImageView(imageRefugee);
+		grid.add(imageView, y, x);
+		System.out.println("put refugee in the grid");
+	}
+
 	private void testShowImages() {
-		Image imageVictim = new Image("resources/victim.jpg");
-		Image imageRefugee = new Image("resources/refugee.jpg");
-		Image imageFireFighter = new Image("resources/firefighter.jpg");
-		Image imageFire = new Image("resources/fire.jpg");
-		Image imageParamedics = new Image("resources/paramedics.jpg");
+		Image imageVictim = new Image(Params.PATH_IMAGE_VICTIM);
+		Image imageRefugee = new Image(Params.PATH_IMAGE_REFUGEE);
+		Image imageFireFighter = new Image(Params.PATH_IMAGE_FIREFIGHTER);
+		Image imageFire = new Image(Params.PATH_IMAGE_FIRE);
+		Image imageParamedics = new Image(Params.PATH_IMAGE_PARAMEDICS);
 
 		Pane pane = new Pane();
 		Pane pane1 = new Pane();
@@ -131,7 +147,7 @@ public class MainController implements Initializable {
 	}
 	
 	public ImageView getWhiteImageView() {
-		Image imageWhite = new Image("resources/white.jpg");
+		Image imageWhite = new Image(Params.PATH_IMAGE_WHITE);
 		ImageView imageView = new ImageView(imageWhite);
 		return imageView;
 	}
