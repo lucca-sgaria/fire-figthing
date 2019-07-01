@@ -1,4 +1,4 @@
-package br.com.ucs.firecombat.model;
+package br.com.ucs.firecombat.constants;
 
 public class FirefighterState {
 
