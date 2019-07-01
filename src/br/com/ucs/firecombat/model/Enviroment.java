@@ -22,7 +22,7 @@ public class Enviroment {
 	
 	private List<Fire> fires;
 	private List<Firefighter> firefighters;
-	private List<Refugee> ListRefugees;
+	private List<Refugee> listRefugees;
 	
 	private Matrix matrix;
 	private Semaphores semaphores;
@@ -38,8 +38,6 @@ public class Enviroment {
 		
 		configureMatrix();
 		configureSemaphores();
-//		generateFirstFires();
-//		generateFirstFighters();
 		genereteFirstObjects();
 	
 		for (Fire fire : fires) {
@@ -51,7 +49,25 @@ public class Enviroment {
 			firefighter.start();
 		}
 
-		ListRefugees.forEach(Thread::start);
+		listRefugees.forEach(Thread::start);
+
+//		try{
+//
+//			for (Fire fire : fires){
+//				fire.join();
+//			}
+//
+//			for(Firefighter firefighter : firefighters){
+//				firefighter.join();
+//			}
+//
+//			for (Refugee refugee : listRefugees) {
+//				refugee.join();
+//			}
+//		}catch (InterruptedException e){
+//			e.printStackTrace();
+//		}
+
 	}
 
 	private void configureMatrix() {
@@ -72,38 +88,7 @@ public class Enviroment {
 		this.listeners = new Listeneres();
 		logger.info("configureListeners()-end");
 	}
-	
-	/*
-	 * Gera os fogos iniciais
-	 */
-//	private void generateFirstFires() {
-//		this.fires = new ArrayList<Fire>();
-//		int fireamount = MatrixConstants.FIREAMOUNT;
-//		logger.info("generateFirstFires()-fireamount-" +fireamount);
-//
-//		for (int i = 1; i <= fireamount; i++) {
-//			int id = i+100;
-//			Fire e = new Fire(id, null, semaphores.getSemWriteToMatrix(),this);
-//			fires.add(e);
-//			logger.info("init()-created fire-" +e.toString());
-//		}
-//		logger.info("generateFirstFires()-end");
-//	}
-	
-//	private void generateFirstFighters() {
-//		this.firefighters = new ArrayList<Firefighter>();
-//		int firefightersAmount = MatrixConstants.FIREFIGHTERSAMOUNT;
-//		logger.info("generateFirstFighters()-firefighter-" +firefightersAmount);
-//
-//		for (int i = 1; i <= firefightersAmount; i++) {
-//			int id = i+1000;
-//			Firefighter e = new Firefighter(id, semaphores.getSemWriteToMatrix(),this);
-//			firefighters.add(e);
-//			logger.info("init()-created firefighter-" +e.toString());
-//		}
-//		logger.info("generateFirstFighters()-end");
-//	}
-//
+
 	/*
 		Gera todos os individuos para o inicio da simulação
 	 */
@@ -111,7 +96,7 @@ public class Enviroment {
 	private void genereteFirstObjects(){
 		this.fires = new ArrayList<>();
 		this.firefighters = new ArrayList<>();
-		this.ListRefugees = new ArrayList<>();
+		this.listRefugees = new ArrayList<>();
 
 		logger.info("genereteFirstObjects()");
 
@@ -126,7 +111,7 @@ public class Enviroment {
 		}
 
 		for(int i = 1; i <= MatrixConstants.REFUGEE_AMOUNT; i++){
-			ListRefugees.add(new Refugee(i+MatrixConstants.REFUGEE_INTERVAL_VALUES,
+			listRefugees.add(new Refugee(i+MatrixConstants.REFUGEE_INTERVAL_VALUES,
 					semaphores.getSemWriteToMatrix(),this));
 		}
 
@@ -167,12 +152,16 @@ public class Enviroment {
 	public void cleanPosition(int x, int y,int threadId) {
 		logger.info("cleanPosition()-x=" + x + ",y=" + y);
 		matrix.cleanPosition(x, y);
-		if(threadId >= 100 && threadId <= 201) {
+		if(threadId >= 100 && threadId <= 200) {
 			listeners.notifyFireRemovedListeners(x,y);
 		}
 		
 		if(threadId >= 1000 && threadId <= 1999) {
 			listeners.notifyFireFighterRemovedListeners(x, y);
+		}
+
+		if(threadId >= 201 && threadId <= 300){
+			listeners.notifyRefugeeRemovedListeners(x, y);
 		}
 		
 		logger.info("cleanPosition()-end");
@@ -198,7 +187,22 @@ public class Enviroment {
 		logger.info("findObject()-object-end-x=" + obj[0] +",y="+obj[1]+",id="+obj[2]);
 		return obj;
 	}
-	
+
+	public int[] findF(Refugee refugee) {
+		logger.info("findObjectaaaaaaaaa()-refugee-"+refugee.toString());
+		int[] obj = matrix.findObjects(refugee.getX(), refugee.getY(), 1);
+
+		if(obj[2] == refugee.getThreadId()) {
+			obj[0] = 0;
+			obj[1] = 0;
+			obj[2] = 0;
+		}
+
+		logger.info("findObject()-object-end-x=" + obj[0] +",y="+obj[1]+",id="+obj[2]);
+		return obj;
+	}
+
+
 	public Fire findFire(int threadId) {
 		logger.info("findFire()-fireId-"+threadId);
 		Optional<Fire> findFirst = fires.stream().filter(f -> f.getThreadId() == threadId).findFirst();

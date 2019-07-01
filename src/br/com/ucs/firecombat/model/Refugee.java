@@ -1,5 +1,6 @@
 package br.com.ucs.firecombat.model;
 
+import br.com.ucs.firecombat.constants.MatrixConstants;
 import br.com.ucs.firecombat.constants.Params;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -30,30 +31,51 @@ public class Refugee extends Thread {
         this.threadId = threadId;
         this.environment = enviroment;
         this.semWriteToMatrix = semWriteToMatrix;
-    }
 
+        try {
+            this.semWriteToMatrix.acquire();
+            while (true){
+                if(firstLocation()) break;
+            }
+            this.semWriteToMatrix.release();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
 
     @Override
     public void run(){
-
         for(;;){
             try {
+                // TODO: 30/06/19 metodo para andar aleatoriamente
                 semWriteToMatrix.acquire();
 
-                while (true){
-                    if(firstLocation()) break;
-                }
+                for(int i = 1; i <= MatrixConstants.REFUGEE_AMOUNT; i++){
 
-                sleep(5000);
+                    // procura fogo
+                    // se achou muda estado
+                    int[] obj = environment.findF(this);
+                    if(obj[0] != 0){
+                        System.out.println("está pegando fogo");
+                    }
+
+                    //semWriteToMatrix.acquire();
+
+                    environment.cleanPosition(getX(),getY(),MatrixConstants.REFUGEE_INTERVAL_VALUES + i);
+                    while (true){
+                        if(firstLocation()) break;
+                    }
+
+
+
+                }
                 semWriteToMatrix.release();
+                sleep(3000);
 
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-
-
         }
-
     }
 
     public boolean firstLocation(){
