@@ -15,6 +15,9 @@ public class Listeneres {
 	private List<RefugeeAddedListener> addedRefugeeListener = new ArrayList<>();
 	private List<RefugeeRemovedListener> removedRefugeeListener = new ArrayList<>();
 
+	private List<ParamedicAddedListener> addedParamedicsListener = new ArrayList<>();
+	private List<ParamedicRemovedListener> removedParamedicsListener = new ArrayList<>();
+
 	protected void notifyFireAddedListeners(Fire fire) {
 		this.addedFireListeners.forEach(listener -> listener.onFireAdded(fire));
 	}
@@ -62,6 +65,22 @@ public class Listeneres {
 
 	public void registerRefugeeRemovedListener(RefugeeRemovedListener listener) {
 		this.removedRefugeeListener.add(listener);
+	}
+
+	protected void notifyParamedicsAddedListeners(Paramedics paramedics) {
+		this.addedParamedicsListener.forEach(listener -> listener.onParamedicAdded(paramedics));
+	}
+
+	protected void notifyParamedicsRemovedListeners(int x, int y) {
+		this.removedParamedicsListener.forEach(listener -> listener.onParamedicRemoved(x, y));
+	}
+
+	public void registerParamedicsAddedListener(ParamedicAddedListener listener) {
+		this.addedParamedicsListener.add(listener);
+	}
+
+	public void registerParamedicsRemovedListener(ParamedicRemovedListener listener) {
+		this.removedParamedicsListener.add(listener);
 	}
 
 

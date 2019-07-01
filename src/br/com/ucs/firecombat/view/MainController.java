@@ -86,6 +86,18 @@ public class MainController implements Initializable {
 						removeImageInGrid(x,y));
 		});
 
+		env.getListeners().registerParamedicsAddedListener(paramedics -> {
+				Platform.runLater(() -> {
+					addParamedicsInGrid(paramedics.getX(), paramedics.getY());
+				});
+		});
+
+		env.getListeners().registerParamedicsRemovedListener((x, y) -> {
+			Platform.runLater(() -> {
+				removeImageInGrid(x,y);
+			});
+		});
+
 
 	}
 	private void removeImageInGrid(int x, int y) {
@@ -113,6 +125,19 @@ public class MainController implements Initializable {
 		ImageView imageView = new ImageView(imageRefugee);
 		grid.add(imageView, y, x);
 		System.out.println("put refugee in the grid");
+	}
+
+	private void addParamedicsInGrid(int x, int y){
+		Image imageRefugee = new Image(Params.PATH_IMAGE_PARAMEDICS);
+		ImageView imageView = new ImageView(imageRefugee);
+		grid.add(imageView, y, x);
+		System.out.println("put paramedics in the grid");
+	}
+
+	public ImageView getWhiteImageView() {
+		Image imageWhite = new Image(Params.PATH_IMAGE_WHITE);
+		ImageView imageView = new ImageView(imageWhite);
+		return imageView;
 	}
 
 	private void testShowImages() {
@@ -144,12 +169,6 @@ public class MainController implements Initializable {
 		pane3.getChildren().add(imgView3);
 		ImageView imgView4 = new ImageView(imageParamedics);
 		pane4.getChildren().add(imgView4);
-	}
-	
-	public ImageView getWhiteImageView() {
-		Image imageWhite = new Image(Params.PATH_IMAGE_WHITE);
-		ImageView imageView = new ImageView(imageWhite);
-		return imageView;
 	}
 
 }

@@ -38,6 +38,10 @@ public class Matrix {
 		matrix[refugee.getX()][refugee.getY()] = refugee.getThreadId();
 	}
 
+	public void insertParamedics(Paramedics paramedics) {
+		matrix[paramedics.getX()][paramedics.getY()] = paramedics.getThreadId();
+	}
+
 	public void cleanPosition(int x, int y) {
 		matrix[x][y] = 0;
 	}

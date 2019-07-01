@@ -23,6 +23,7 @@ public class Enviroment {
 	private List<Fire> fires;
 	private List<Firefighter> firefighters;
 	private List<Refugee> listRefugees;
+	private List<Paramedics> listParamedics;
 	
 	private Matrix matrix;
 	private Semaphores semaphores;
@@ -50,6 +51,8 @@ public class Enviroment {
 		}
 
 		listRefugees.forEach(Thread::start);
+
+		listParamedics.forEach(Thread::start);
 
 //		try{
 //
@@ -97,6 +100,7 @@ public class Enviroment {
 		this.fires = new ArrayList<>();
 		this.firefighters = new ArrayList<>();
 		this.listRefugees = new ArrayList<>();
+		this.listParamedics = new ArrayList<>();
 
 		logger.info("genereteFirstObjects()");
 
@@ -112,6 +116,11 @@ public class Enviroment {
 
 		for(int i = 1; i <= MatrixConstants.REFUGEE_AMOUNT; i++){
 			listRefugees.add(new Refugee(i+MatrixConstants.REFUGEE_INTERVAL_VALUES,
+					semaphores.getSemWriteToMatrix(),this));
+		}
+
+		for(int i = 1; i <= MatrixConstants.PARAMEDICS_AMOUNT; i++){
+			listParamedics.add(new Paramedics(i+MatrixConstants.PARAMEDICS_INTERVAL_VALUES_MIN,
 					semaphores.getSemWriteToMatrix(),this));
 		}
 
@@ -146,6 +155,13 @@ public class Enviroment {
 		matrix.insertRefugee(refugee);
 		listeners.notifyRefugeeAddedListeners(refugee);
 		logger.info("insertRefugee() - end");
+	}
+
+	void insertParamedics(Paramedics paramedics){
+		logger.info("insertParamedics() - " + paramedics.toString());
+		matrix.insertParamedics(paramedics);
+		listeners.notifyParamedicsAddedListeners(paramedics);
+		logger.info("insertParamedics() - end");
 	}
 	
 	
@@ -198,7 +214,7 @@ public class Enviroment {
 			obj[2] = 0;
 		}
 
-		logger.info("findObject()-object-end-x=" + obj[0] +",y="+obj[1]+",id="+obj[2]);
+		logger.info("findF()-object-end-x=" + obj[0] +",y="+obj[1]+",id="+obj[2]);
 		return obj;
 	}
 	
