@@ -1,7 +1,10 @@
 package br.com.ucs.firecombat.model;
 
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.Semaphore;
 
+import br.com.ucs.firecombat.constants.MatrixConstants;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -16,6 +19,11 @@ public class Fire extends Thread {
 	private int threadId;
 	private int x;
 	private int y;
+	private static int qtdFire;
+
+	public static Semaphore mutexQtdFire = new Semaphore(0);
+
+	public static Semaphore semFire = new Semaphore(0);
 	
 //	private AppMain main;
 	
@@ -40,51 +48,83 @@ public class Fire extends Thread {
 //		this.main = main;
 		this.semWriteToMatrix = semWriteToMatrix;
 		this.environment = enviroment;
+
+		try {
+			this.semWriteToMatrix.acquire();
+			while (true){
+				if(changeLocation()) break;
+			}
+			this.semWriteToMatrix.release();
+		}catch (Exception e){
+			e.printStackTrace();
+		}
+		qtdFire++;
 	}
+
+//	@Override
+//	public void run() {
+//		try {
+//		logger.info("run()-"+this.toString());
+//		int iterations = 1;
+//
+//		while (true) {
+//			logger.info("run()-iteration-"+iterations+"-"+this.toString());
+//			if(life  > 0) {
+//				if(iterations == 1) {
+//					System.out.println("run()-"+threadId + " is waiting for a permit.");
+//					semWriteToMatrix.acquire();
+//					System.out.println("run()-"+threadId + " gets a permit.");
+//
+////					if(iterations > 1) {
+////						environment.cleanPosition(x, y, threadId);
+////						life = 5;
+////						logger.info("run()-life restored-"+this.toString());
+////					}
+//					while (true) {
+//						boolean inserted = changeLocation();
+//						if (inserted) {
+//							break;
+//						}
+//					}
+//					sleep(5000);
+//					logger.info("run()-thread-" +threadId + " releases the permit.");
+//					semWriteToMatrix.release();
+//				}
+//
+////				life--;
+//				iterations++;
+//				sleep(5000);
+//			} else {
+//				environment.cleanPosition(x, y, threadId);
+//				break;
+//			}
+//		}
+//
+//		} catch (InterruptedException e) {
+//			e.printStackTrace();
+//		}
+//		System.out.println("end ThreadId= " + threadId);
+//	}
+
 
 	@Override
 	public void run() {
-		try {
-		logger.info("run()-"+this.toString());
-		int iterations = 1;
-		
-		while (true) {
-			logger.info("run()-iteration-"+iterations+"-"+this.toString());
-			if(life  >0) {
-				if(iterations == 1) {
-					System.out.println("run()-"+threadId + " is waiting for a permit."); 
-					semWriteToMatrix.acquire();
-					System.out.println("run()-"+threadId + " gets a permit."); 
-					
-//					if(iterations > 1) {
-//						environment.cleanPosition(x, y, threadId);
-//						life = 5;
-//						logger.info("run()-life restored-"+this.toString());
-//					}
-					while (true) {
-						boolean inserted = changeLocation();
-						if (inserted) {
-							break;
-						}
-					}
-					sleep(5000);
-					logger.info("run()-thread-" +threadId + " releases the permit.");
-					semWriteToMatrix.release();
+		while (true){
+
+				// TODO: 01/07/19 comportamento do meu fogo
+				if(qtdFire < 4){
+					System.out.println("AQUI DENTRO");
+
+					environment.createNewFire();
+					qtdFire++;
+
 				}
-				
-//				life--;
-				iterations++;
-				sleep(5000);
-			} else {
-				environment.cleanPosition(x, y, threadId);
-				break;
-			}
+
+
+
+
 		}
-		
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		System.out.println("end ThreadId= " + threadId);
+
 	}
 
 	public boolean changeLocation() throws InterruptedException {
@@ -149,9 +189,28 @@ public class Fire extends Thread {
 		this.life = life;
 	}
 
-	public void putOutFire() {
+	public void putOutFire(Fire fire, Firefighter firefighter) {
 		logger.info("putOutFire-fire-"+this.toString());
-		life=0;
+		fire.setLife(0);
+		Timer timer = new Timer();
+		timer.schedule(new TimerTask() {
+			@Override
+			public void run() {
+//				try {
+//					mutexQtdFire.acquire();
+//				}catch (InterruptedException e){
+//					e.printStackTrace();
+//				}
+
+				environment.cleanPosition(fire.getX(),fire.getY(),fire.threadId);
+				firefighter.setSemFireFigtherRelease();
+				qtdFire--;
+//				mutexQtdFire.release();
+				System.out.println("QUANTIDAE DE FOGOOOOOO "  + qtdFire);
+			}
+		},5000);
+
+
 		logger.info("putOutFire-fire-end-"+this.toString());
 	}
 	
