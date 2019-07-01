@@ -2,6 +2,7 @@ package br.com.ucs.firecombat.model;
 
 import java.util.concurrent.Semaphore;
 
+import br.com.ucs.firecombat.constants.FirefighterState;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
