@@ -10,7 +10,6 @@ import org.apache.logging.log4j.Logger;
 
 
 import br.com.ucs.firecombat.constants.MatrixConstants;
-import sun.awt.Mutex;
 
 public class Enviroment {
 	private static final Logger logger =
@@ -23,6 +22,7 @@ public class Enviroment {
 	
 	private List<Fire> fires;
 	private List<Firefighter> firefighters;
+	private List<Refugee> ListRefugees;
 	
 	private Matrix matrix;
 	private Semaphores semaphores;
@@ -38,8 +38,9 @@ public class Enviroment {
 		
 		configureMatrix();
 		configureSemaphores();
-		generateFirstFires();
-		generateFirstFighters();
+//		generateFirstFires();
+//		generateFirstFighters();
+		genereteFirstObjects();
 	
 		for (Fire fire : fires) {
 			fire.start();
@@ -49,6 +50,8 @@ public class Enviroment {
 			System.out.println("aaa");
 			firefighter.start();
 		}
+
+		ListRefugees.forEach(Thread::start);
 	}
 
 	private void configureMatrix() {
@@ -73,32 +76,62 @@ public class Enviroment {
 	/*
 	 * Gera os fogos iniciais
 	 */
-	private void generateFirstFires() {
-		this.fires = new ArrayList<Fire>();
-		int fireamount = MatrixConstants.FIREAMOUNT;
-		logger.info("generateFirstFires()-fireamount-" +fireamount);
-		
-		for (int i = 1; i <= fireamount; i++) {
-			int id = i+100;
-			Fire e = new Fire(id, null, semaphores.getSemWriteToMatrix(),this);
-			fires.add(e);
-			logger.info("init()-created fire-" +e.toString());
-		}
-		logger.info("generateFirstFires()-end");
-	}
+//	private void generateFirstFires() {
+//		this.fires = new ArrayList<Fire>();
+//		int fireamount = MatrixConstants.FIREAMOUNT;
+//		logger.info("generateFirstFires()-fireamount-" +fireamount);
+//
+//		for (int i = 1; i <= fireamount; i++) {
+//			int id = i+100;
+//			Fire e = new Fire(id, null, semaphores.getSemWriteToMatrix(),this);
+//			fires.add(e);
+//			logger.info("init()-created fire-" +e.toString());
+//		}
+//		logger.info("generateFirstFires()-end");
+//	}
 	
-	private void generateFirstFighters() {
-		this.firefighters = new ArrayList<Firefighter>();
-		int firefightersAmount = MatrixConstants.FIREFIGHTERSAMOUNT;
-		logger.info("generateFirstFighters()-firefighter-" +firefightersAmount);
-		
-		for (int i = 1; i <= firefightersAmount; i++) {
-			int id = i+1000;
-			Firefighter e = new Firefighter(id, semaphores.getSemWriteToMatrix(),this);
-			firefighters.add(e);
-			logger.info("init()-created firefighter-" +e.toString());
+//	private void generateFirstFighters() {
+//		this.firefighters = new ArrayList<Firefighter>();
+//		int firefightersAmount = MatrixConstants.FIREFIGHTERSAMOUNT;
+//		logger.info("generateFirstFighters()-firefighter-" +firefightersAmount);
+//
+//		for (int i = 1; i <= firefightersAmount; i++) {
+//			int id = i+1000;
+//			Firefighter e = new Firefighter(id, semaphores.getSemWriteToMatrix(),this);
+//			firefighters.add(e);
+//			logger.info("init()-created firefighter-" +e.toString());
+//		}
+//		logger.info("generateFirstFighters()-end");
+//	}
+//
+	/*
+		Gera todos os individuos para o inicio da simulação
+	 */
+
+	private void genereteFirstObjects(){
+		this.fires = new ArrayList<>();
+		this.firefighters = new ArrayList<>();
+		this.ListRefugees = new ArrayList<>();
+
+		logger.info("genereteFirstObjects()");
+
+		for(int i = 1; i <= MatrixConstants.FIREAMOUNT; i++){
+			fires.add(new Fire(i+MatrixConstants.FIRE_INTERVAL_VALUES,
+					null,semaphores.getSemWriteToMatrix(),this));
 		}
-		logger.info("generateFirstFighters()-end");
+
+		for(int i = 1; i <= MatrixConstants.FIREFIGHTERSAMOUNT; i++){
+			firefighters.add(new Firefighter(i+MatrixConstants.FIREFIGHTERS_INTERVAL_VALUES,
+					semaphores.getSemWriteToMatrix(),this));
+		}
+
+		for(int i = 1; i <= MatrixConstants.REFUGEE_AMOUNT; i++){
+			ListRefugees.add(new Refugee(i+MatrixConstants.REFUGEE_INTERVAL_VALUES,
+					semaphores.getSemWriteToMatrix(),this));
+		}
+
+		logger.info("genereteFirstObjects() - end");
+
 	}
 	
 	public int generateRandom() {
@@ -121,6 +154,13 @@ public class Enviroment {
 		matrix.insertFireFighter(firefighter);
 		listeners.notifyFireFighterAddedListeners(firefighter);
 		logger.info("insertFireFighter()-end");
+	}
+
+	void insertRefugee(Refugee refugee){
+		logger.info("insertRefufee() - " + refugee.toString());
+		matrix.insertRefugee(refugee);
+		listeners.notifyRefugeeAddedListeners(refugee);
+		logger.info("insertRefugee() - end");
 	}
 	
 	

@@ -3,10 +3,7 @@ package br.com.ucs.firecombat.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import br.com.ucs.firecombat.listener.FireAddedListener;
-import br.com.ucs.firecombat.listener.FireFighterAddedListener;
-import br.com.ucs.firecombat.listener.FireFighterRemovedListener;
-import br.com.ucs.firecombat.listener.FireRemovedListener;
+import br.com.ucs.firecombat.listener.*;
 
 public class Listeneres {
 	private List<FireAddedListener> addedFireListeners = new ArrayList<>();
@@ -14,6 +11,9 @@ public class Listeneres {
 
 	private List<FireFighterAddedListener> addedFireFighterListeners = new ArrayList<>();
 	private List<FireFighterRemovedListener> removedFireFighterListeners = new ArrayList<>();
+
+	private List<RefugeeAddedListener> addedRefugeeListener = new ArrayList<>();
+	private List<RefugeeRemovedListener> removedRefugeeListener = new ArrayList<>();
 
 	protected void notifyFireAddedListeners(Fire fire) {
 		this.addedFireListeners.forEach(listener -> listener.onFireAdded(fire));
@@ -46,4 +46,23 @@ public class Listeneres {
 	public void registerFireFighterRemovedListener(FireFighterRemovedListener listener) {
 		this.removedFireFighterListeners.add(listener);
 	}
+
+
+	protected void notifyRefugeeAddedListeners(Refugee refugee) {
+		this.addedRefugeeListener.forEach(listener -> listener.onRefugeeAdd(refugee));
+	}
+
+	protected void notifyRefugeeRemovedListeners(int x, int y) {
+		this.removedRefugeeListener.forEach(listener -> listener.onRefugeeRemoved(x, y));
+	}
+
+	public void registerRefugeeAddedListener(RefugeeAddedListener listener) {
+		this.addedRefugeeListener.add(listener);
+	}
+
+	public void registerRefugeeRemovedListener(RefugeeRemovedListener listener) {
+		this.removedRefugeeListener.add(listener);
+	}
+
+
 }

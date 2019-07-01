@@ -32,6 +32,10 @@ public class Matrix {
 	public void insertFireFighter(Firefighter firefighter) {
 		matrix[firefighter.getX()][firefighter.getY()] = firefighter.getThreadId();
 	}
+
+	public void insertRefugee(Refugee refugee) {
+		matrix[refugee.getX()][refugee.getY()] = refugee.getThreadId();
+	}
 	
 	public void cleanPosition(int x, int y) {
 		matrix[x][y] = 0;
