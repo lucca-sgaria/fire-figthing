@@ -44,15 +44,22 @@ public class Firefighter extends Thread {
 					// espera permissao
 					// na 1 procura lugar
 					// libera
-					System.out.println(iteraction > 1);
-					if (iteraction > 1) {
-						environment.cleanPosition(x, y, threadId);
-					}
 
 					while (true) {
-						boolean firstLocation = firstLocation();
-						if (firstLocation) {
-							break;
+						if(iteraction == 1) {
+							boolean firstLocation = firstLocation();
+							if (firstLocation) {
+								break;
+							}
+						} else {
+							int[] nextStep = environment.getNextStep(x, y);
+							if(nextStep[0] != -1) {
+								environment.cleanPosition(x, y, threadId);
+								this.x = nextStep[0];
+								this.y = nextStep[1];
+								environment.insertFireFighter(this);
+								break;
+							}
 						}
 					}
 					// procura fogo

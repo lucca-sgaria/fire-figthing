@@ -201,6 +201,13 @@ public class Enviroment {
 		logger.info("findObject()-object-end-x=" + obj[0] +",y="+obj[1]+",id="+obj[2]);
 		return obj;
 	}
+	
+	public int[] getNextStep(int x,int y) {
+		logger.info("getNextStep()-x="+x+",y="+y);
+		int[] obj = matrix.calculateNextStep(x, y);
+		logger.info("getNextStep()-object-end-x=" + obj[0] +",y="+obj[1]);
+		return obj;
+	}
 
 
 	public Fire findFire(int threadId) {
