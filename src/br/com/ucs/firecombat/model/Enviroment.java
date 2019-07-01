@@ -163,23 +163,43 @@ public class Enviroment {
 		listeners.notifyParamedicsAddedListeners(paramedics);
 		logger.info("insertParamedics() - end");
 	}
+
+//	void createNewFire(){
+//	    if(!fires.isEmpty()){
+//	        fires.add(fires.size()+1, new Fire(fires.size() + (MatrixConstants.FIRE_INTERVAL_VALUES +1 ),
+//                    null, semaphores.getSemWriteToMatrix(),this));
+//
+//            insertFire(fires.get(fires.size()+1));
+//        }else{
+//            fires.add(new Fire(1+MatrixConstants.FIRE_INTERVAL_VALUES,
+//                    null,semaphores.getSemWriteToMatrix(),this));
+//
+//            insertFire(fires.get(1));
+//        }
+//    }
 	
 	
 	public void cleanPosition(int x, int y,int threadId) {
 		logger.info("cleanPosition()-x=" + x + ",y=" + y);
 		matrix.cleanPosition(x, y);
+
+
 		if(threadId >= 100 && threadId <= 200) {
 			listeners.notifyFireRemovedListeners(x,y);
+			//fires.remove(threadId);
 		}
-		
+
 		if(threadId >= 1000 && threadId <= 1999) {
 			listeners.notifyFireFighterRemovedListeners(x, y);
+			//firefighters.remove(threadId);
 		}
 
 		if(threadId >= 201 && threadId <= 300){
 			listeners.notifyRefugeeRemovedListeners(x, y);
+			//listRefugees.remove(threadId);
 		}
-		
+
+		//semaphores.getSemWriteToMatrix().release();
 		logger.info("cleanPosition()-end");
 	}
 	
