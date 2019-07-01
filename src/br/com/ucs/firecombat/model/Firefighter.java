@@ -14,6 +14,8 @@ public class Firefighter extends Thread {
 	private int y;
 	private int state = FirefighterState.SEARCHING;
 
+	private Semaphore semFireFigther;
+
 	private Semaphore semWriteToMatrix;
 	private Enviroment environment;
 
@@ -28,7 +30,10 @@ public class Firefighter extends Thread {
 		this.threadId = threadId;
 		this.semWriteToMatrix = semWriteToMatrix;
 		this.environment = environment;
+		this.semFireFigther = new Semaphore(0);
 	}
+
+
 
 	@Override
 	public void run() {
@@ -62,6 +67,7 @@ public class Firefighter extends Thread {
 							}
 						}
 					}
+					semWriteToMatrix.release();
 					// procura fogo
 					// se achou muda estado
 					int[] obj = environment.findObject(this);
@@ -74,11 +80,13 @@ public class Firefighter extends Thread {
 					} else if (obj[2] >= 101 && obj[2] <= 200) {
 						// achou fogo
 						Fire findFire = environment.findFire(obj[2]);
-						findFire.putOutFire();
+						findFire.putOutFire(findFire, this);
+						//bloqueou a thread (esperando o fogo apagar)
+						this.semFireFigther.acquire();
 					}
-					sleep(5000);
+					sleep(600);
 					logger.info("run()-thread-" + threadId + " releases the permit.");
-					semWriteToMatrix.release();
+
 				}
 
 				// se estado == pronto pra apagar
@@ -141,6 +149,18 @@ public class Firefighter extends Thread {
 
 	public Enviroment getEnvironment() {
 		return environment;
+	}
+
+	public void setSemFireFigtherRelease() {
+		this.semFireFigther.release();
+	}
+
+	public void setSemFireFigtherAcquire(){
+		try {
+			this.semFireFigther.acquire();
+		}catch (InterruptedException e){
+			e.printStackTrace();
+		}
 	}
 
 	public void setEnvironment(Enviroment environment) {
