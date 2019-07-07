@@ -105,17 +105,17 @@ public class Enviroment {
 		logger.info("genereteFirstObjects()");
 
 		for(int i = 1; i <= MatrixConstants.FIREAMOUNT; i++){
-			fires.add(new Fire(i+MatrixConstants.FIRE_INTERVAL_VALUES,
+			fires.add(new Fire(i+MatrixConstants.FIRE_INTERVAL_VALUES_MAX,
 					null,semaphores.getSemWriteToMatrix(),this));
 		}
 
 		for(int i = 1; i <= MatrixConstants.FIREFIGHTERSAMOUNT; i++){
-			firefighters.add(new Firefighter(i+MatrixConstants.FIREFIGHTERS_INTERVAL_VALUES,
+			firefighters.add(new Firefighter(i+MatrixConstants.FIREFIGHTERS_INTERVAL_VALUES_MIN,
 					semaphores.getSemWriteToMatrix(),this));
 		}
 
 		for(int i = 1; i <= MatrixConstants.REFUGEE_AMOUNT; i++){
-			listRefugees.add(new Refugee(i+MatrixConstants.REFUGEE_INTERVAL_VALUES,
+			listRefugees.add(new Refugee(i+MatrixConstants.REFUGEE_INTERVAL_VALUES_MAX,
 					semaphores.getSemWriteToMatrix(),this));
 		}
 
@@ -166,12 +166,12 @@ public class Enviroment {
 
 //	void createNewFire(){
 //	    if(!fires.isEmpty()){
-//	        fires.add(fires.size()+1, new Fire(fires.size() + (MatrixConstants.FIRE_INTERVAL_VALUES +1 ),
+//	        fires.add(fires.size()+1, new Fire(fires.size() + (MatrixConstants.FIRE_INTERVAL_VALUES_MAX +1 ),
 //                    null, semaphores.getSemWriteToMatrix(),this));
 //
 //            insertFire(fires.get(fires.size()+1));
 //        }else{
-//            fires.add(new Fire(1+MatrixConstants.FIRE_INTERVAL_VALUES,
+//            fires.add(new Fire(1+MatrixConstants.FIRE_INTERVAL_VALUES_MAX,
 //                    null,semaphores.getSemWriteToMatrix(),this));
 //
 //            insertFire(fires.get(1));

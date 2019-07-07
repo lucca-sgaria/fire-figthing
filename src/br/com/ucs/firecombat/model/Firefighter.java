@@ -80,7 +80,7 @@ public class Firefighter extends Thread {
 					} else if (obj[2] >= 101 && obj[2] <= 200) {
 						// achou fogo
 						Fire findFire = environment.findFire(obj[2]);
-						findFire.putOutFire(findFire, this);
+						findFire.putOutFire(this);
 						//bloqueou a thread (esperando o fogo apagar)
 						this.semFireFigther.acquire();
 					}
