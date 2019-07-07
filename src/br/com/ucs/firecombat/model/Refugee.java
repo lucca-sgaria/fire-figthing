@@ -124,6 +124,7 @@ public class Refugee extends Thread {
 				
 				if(life == 0) {
 					environment.cleanPosition(x, y, threadId);
+					semWriteToMatrix.release();
 					break;
 				}
 				sleep(600);
