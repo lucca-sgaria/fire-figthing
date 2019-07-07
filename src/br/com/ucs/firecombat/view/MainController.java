@@ -75,7 +75,24 @@ public class MainController implements Initializable {
 				}
 			});
 		});
+		
+		env.getListeners().registerRefugeeTurnedListener((x,y,state) -> {
+			System.out.println("going to turn a refugee in x=" + x + ",y=" + y);
+			Platform.runLater(new Runnable() {
+				@Override
+				public void run() {
+					removeImageInGrid(x, y);
+					if(state == Params.ALIVE) {
+						 
+					} else if(state == Params.VICTIM) {
+						addVictimInGrid(x, y);
+					}
+				}
 
+			
+			});
+		});
+		
 		env.getListeners().registerRefugeeAddedListener(refugee -> {
 				Platform.runLater(() ->
 						addRefugeeInGrid(refugee.getX(),refugee.getY()));
@@ -138,6 +155,13 @@ public class MainController implements Initializable {
 		Image imageWhite = new Image(Params.PATH_IMAGE_WHITE);
 		ImageView imageView = new ImageView(imageWhite);
 		return imageView;
+	}
+	
+	private void addVictimInGrid(int x, int y) {
+		Image imageRefugee = new Image(Params.PATH_IMAGE_VICTIM);
+		ImageView imageView = new ImageView(imageRefugee);
+		grid.add(imageView, y, x);
+		System.out.println("put victim in the grid");
 	}
 
 	private void testShowImages() {

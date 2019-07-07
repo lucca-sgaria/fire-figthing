@@ -1,162 +1,202 @@
 package br.com.ucs.firecombat.model;
 
-import br.com.ucs.firecombat.constants.MatrixConstants;
-import br.com.ucs.firecombat.constants.Params;
+import java.util.concurrent.Semaphore;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.Semaphore;
+import br.com.ucs.firecombat.constants.Params;
 
 public class Refugee extends Thread {
+	private static final Logger logger = LogManager.getLogger(Refugee.class);
 
-    private static final Logger logger =
-            LogManager.getLogger(Fire.class);
+	private int threadId;
+	private int x;
+	private int y;
+	private int life = Params.REFUGEE_LIFE;
+	private int stateRefugee = Params.ALIVE;
+	private Semaphore semWriteToMatrix;
+	private Enviroment environment;
 
-    private int threadId;
-    private int x;
-    private int y;
-    private int life = Params.REFUGEE_LIFE;
+	public Refugee(int threadId, int x, int y) {
+		this.threadId = threadId;
+		this.x = x;
+		this.y = y;
+	}
 
-    private Semaphore semWriteToMatrix;
-    private Enviroment environment;
+	public Refugee(int threadId, Semaphore semWriteToMatrix, Enviroment enviroment) {
+		this.threadId = threadId;
+		this.environment = enviroment;
+		this.semWriteToMatrix = semWriteToMatrix;
 
+//		try {
+//			this.semWriteToMatrix.acquire();
+//			while (true) {
+//				if (firstLocation())
+//					break;
+//			}
+//			this.semWriteToMatrix.release();
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+	}
 
-    public Refugee(int threadId, int x, int y) {
-        this.threadId = threadId;
-        this.x = x;
-        this.y = y;
-    }
+//    @Override
+//    public void run(){
+//        for(;;){
+//            try {
+//                // TODO: 30/06/19 metodo para andar aleatoriamente
+//                semWriteToMatrix.acquire();
+//
+//                for(int i = 1; i <= MatrixConstants.REFUGEE_AMOUNT; i++){
+//
+//                    //semWriteToMatrix.acquire();
+//
+//                    environment.cleanPosition(getX(),getY(),MatrixConstants.REFUGEE_INTERVAL_VALUES + i);
+//                    while (true){
+//                        int[] nextStep = environment.getNextStep(x, y);
+//                        if(nextStep[0] != -1) {
+//                            environment.cleanPosition(x, y, threadId);
+//                            this.x = nextStep[0];
+//                            this.y = nextStep[1];
+//                            environment.insertRefugee(this);
+//                            break;
+//                        }
+//                    }
+//
+//                    // procura fogo
+//                    // se achou muda estado
+//                    int[] obj = environment.findF(this);
+//                    if(obj[2] >= 1 && obj[2] <=100){
+//                        System.out.println("está pegando fogo");
+//                    }
+//
+//
+//
+//                }
+//                semWriteToMatrix.release();
+//                sleep(3000);
+//
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//    }
 
-    public Refugee(int threadId, Semaphore semWriteToMatrix, Enviroment enviroment) {
-        this.threadId = threadId;
-        this.environment = enviroment;
-        this.semWriteToMatrix = semWriteToMatrix;
+	@Override
+	public void run() {
+		int iteracion = 1;
+		try {
+			while (true) {
+				
+				System.out.println("run()-refugee-" + threadId + " is waiting for a permit.");
+				semWriteToMatrix.acquire();
+				System.out.println("run()-" + threadId + " gets a permit.");
 
-        try {
-            this.semWriteToMatrix.acquire();
-            while (true) {
-                if (firstLocation()) break;
-            }
-            this.semWriteToMatrix.release();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+				while (true) {
+					if(iteracion == 1) {
+						boolean firstLocation = firstLocation();
+						if (firstLocation) {
+							break;
+						}
+					} else {
+						int[] nextStep = environment.getNextStep(x, y);
+						if(nextStep[0] != -1) {
+							environment.cleanPosition(x, y, threadId);
+							this.x = nextStep[0];
+							this.y = nextStep[1];
+							environment.insertRefugee(this);
+							break;
+						}
+					}
+				}
+				
+				if(this.stateRefugee == Params.ALIVE) {
+					int[] findF = environment.findF(this);
+					if(findF[2] > 0) {
+						this.life--;
+						this.stateRefugee = Params.VICTIM;
+						environment.turnIntoVictim(this);
+					}
+				} else if(this.stateRefugee == Params.VICTIM) {
+					life--;
+				}
+				
+				if(life == 0) {
+					environment.cleanPosition(x, y, threadId);
+					break;
+				}
+				sleep(600);
+				semWriteToMatrix.release();
+				iteracion++;
+			}
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		System.out.println("dead");
+	}
 
-    @Override
-    public void run() {
-        for (; ;) {
-            try {
-                // TODO: 30/06/19 metodo para andar aleatoriamente
-                semWriteToMatrix.acquire();
+	public boolean firstLocation() {
+		int x = environment.generateRandom();
+		int y = environment.generateRandom();
 
-                for (int i = 1; i <= MatrixConstants.REFUGEE_AMOUNT; i++) {
+		if (!environment.existsIn(x, y)) {
+			this.x = x;
+			this.y = y;
 
-                    //semWriteToMatrix.acquire();
+			environment.insertRefugee(this);
+			return true;
+		} else {
+			System.out.println("Something already in x=" + x + ";y=" + y);
+			return false;
+		}
 
-                    environment.cleanPosition(getX(), getY(), MatrixConstants.REFUGEE_INTERVAL_VALUES_MAX + i);
-                    while (true) {
-                        int[] nextStep = environment.getNextStep(x, y);
-                        if (nextStep[0] != -1) {
-                            environment.cleanPosition(x, y, threadId);
-                            this.x = nextStep[0];
-                            this.y = nextStep[1];
-                            environment.insertRefugee(this);
-                            break;
-                        }
-                    }
+	}
 
-                    // procura fogo
-                    // se achou muda estado
-                    int[] obj = environment.findF(this);
-                    if (obj[2] >= 100 && obj[2] <= 200) {
+	public int getThreadId() {
+		return threadId;
+	}
 
-                        System.out.println("está pegando fogo");
-                    }
+	public void setThreadId(int threadId) {
+		this.threadId = threadId;
+	}
 
-                }
-                semWriteToMatrix.release();
-                sleep(3000);
+	public int getX() {
+		return x;
+	}
 
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-    }
+	public void setX(int x) {
+		this.x = x;
+	}
 
-    public boolean firstLocation() {
-        int x = environment.generateRandom();
-        int y = environment.generateRandom();
+	public int getY() {
+		return y;
+	}
 
-        if (!environment.existsIn(x, y)) {
-            this.x = x;
-            this.y = y;
+	public void setY(int y) {
+		this.y = y;
+	}
 
-            environment.insertRefugee(this);
-            return true;
-        } else {
-            System.out.println("Something already in x=" + x + ";y=" + y);
-            return false;
-        }
+	public int getLife() {
+		return life;
+	}
 
-    }
-    public void putOutRefugee(Refugee refugee){
-        logger.info("putOutRefugee- refugee " + refugee.toString());
+	public void setLife(int life) {
+		this.life = life;
+	}
 
-        Timer timer = new Timer();
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                refugee.setLife(2);
-            }
-        },2500);
-    }
+	public int getStateRefugee() {
+		return stateRefugee;
+	}
 
+	public void setStateRefugee(int stateRefugee) {
+		this.stateRefugee = stateRefugee;
+	}
 
-    public int getThreadId() {
-        return threadId;
-    }
-
-    public void setThreadId(int threadId) {
-        this.threadId = threadId;
-    }
-
-    public int getX() {
-        return x;
-    }
-
-    public void setX(int x) {
-        this.x = x;
-    }
-
-    public int getY() {
-        return y;
-    }
-
-    public void setY(int y) {
-        this.y = y;
-    }
-
-    public int getLife() {
-        return life;
-    }
-
-    public void setLife(int life) {
-        this.life = life;
-    }
-
-    @Override
-    public String toString() {
-        return "Refugee{" +
-                "threadId=" + threadId +
-                ", x=" + x +
-                ", y=" + y +
-                ", life=" + life +
-                ", semWriteToMatrix=" + semWriteToMatrix +
-                ", environment=" + environment +
-                '}';
-    }
-
+	@Override
+	public String toString() {
+		return "Refugee [threadId=" + threadId + ", x=" + x + ", y=" + y + ", life=" + life + ", stateRefugee="
+				+ stateRefugee + ", semWriteToMatrix=" + semWriteToMatrix + ", environment=" + environment + "]";
+	}
+	
 }

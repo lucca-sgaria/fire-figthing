@@ -10,6 +10,7 @@ import org.apache.logging.log4j.Logger;
 
 
 import br.com.ucs.firecombat.constants.MatrixConstants;
+import br.com.ucs.firecombat.constants.Params;
 
 public class Enviroment {
 	private static final Logger logger =
@@ -152,7 +153,11 @@ public class Enviroment {
 	void insertRefugee(Refugee refugee){
 		logger.info("insertRefufee() - " + refugee.toString());
 		matrix.insertRefugee(refugee);
-		listeners.notifyRefugeeAddedListeners(refugee);
+		if(refugee.getStateRefugee() == Params.ALIVE) {
+			listeners.notifyRefugeeAddedListeners(refugee);
+		} else {
+			turnIntoVictim(refugee);
+		}
 		logger.info("insertRefugee() - end");
 	}
 
@@ -245,6 +250,12 @@ public class Enviroment {
 			logger.error("e" + e.getMessage());
 		}
 		return fire;
+	}
+
+	public void turnIntoVictim(Refugee refugee) {
+		logger.info("turnIntoVictim() - " + refugee.toString());
+		listeners.notifyRefugeeTurnedListeners(refugee);
+		logger.info("turnIntoVictim() - " + refugee.toString());
 	}
 	
 	public void start() {
