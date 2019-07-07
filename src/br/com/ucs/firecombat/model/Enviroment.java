@@ -105,21 +105,20 @@ public class Enviroment {
 		logger.info("genereteFirstObjects()");
 
 		for(int i = 1; i <= MatrixConstants.FIREAMOUNT; i++){
-			fires.add(new Fire(i+MatrixConstants.FIRE_INTERVAL_VALUES_MAX,
-					null,semaphores.getSemWriteToMatrix(),this));
+			fires.add(new Fire(i, null,semaphores.getSemWriteToMatrix(),this));
 		}
 
-		for(int i = 1; i <= MatrixConstants.FIREFIGHTERSAMOUNT; i++){
+		for(int i = 0; i <= MatrixConstants.FIREFIGHTERSAMOUNT; i++){
 			firefighters.add(new Firefighter(i+MatrixConstants.FIREFIGHTERS_INTERVAL_VALUES_MIN,
 					semaphores.getSemWriteToMatrix(),this));
 		}
 
-		for(int i = 1; i <= MatrixConstants.REFUGEE_AMOUNT; i++){
-			listRefugees.add(new Refugee(i+MatrixConstants.REFUGEE_INTERVAL_VALUES_MAX,
+		for(int i = 0; i <= MatrixConstants.REFUGEE_AMOUNT; i++){
+			listRefugees.add(new Refugee(i+MatrixConstants.REFUGEE_INTERVAL_VALUES_MIN,
 					semaphores.getSemWriteToMatrix(),this));
 		}
 
-		for(int i = 1; i <= MatrixConstants.PARAMEDICS_AMOUNT; i++){
+		for(int i = 0; i <= MatrixConstants.PARAMEDICS_AMOUNT; i++){
 			listParamedics.add(new Paramedics(i+MatrixConstants.PARAMEDICS_INTERVAL_VALUES_MIN,
 					semaphores.getSemWriteToMatrix(),this));
 		}
@@ -164,37 +163,26 @@ public class Enviroment {
 		logger.info("insertParamedics() - end");
 	}
 
-//	void createNewFire(){
-//	    if(!fires.isEmpty()){
-//	        fires.add(fires.size()+1, new Fire(fires.size() + (MatrixConstants.FIRE_INTERVAL_VALUES_MAX +1 ),
-//                    null, semaphores.getSemWriteToMatrix(),this));
-//
-//            insertFire(fires.get(fires.size()+1));
-//        }else{
-//            fires.add(new Fire(1+MatrixConstants.FIRE_INTERVAL_VALUES_MAX,
-//                    null,semaphores.getSemWriteToMatrix(),this));
-//
-//            insertFire(fires.get(1));
-//        }
-//    }
-	
 	
 	public void cleanPosition(int x, int y,int threadId) {
 		logger.info("cleanPosition()-x=" + x + ",y=" + y);
 		matrix.cleanPosition(x, y);
 
 
-		if(threadId >= 100 && threadId <= 200) {
+		if(threadId >= MatrixConstants.FIRE_INTERVAL_VALUES_MIN &&
+                threadId <= MatrixConstants.FIRE_INTERVAL_VALUES_MAX) {
 			listeners.notifyFireRemovedListeners(x,y);
 			//fires.remove(threadId);
 		}
 
-		if(threadId >= 1000 && threadId <= 1999) {
+		if(threadId >= MatrixConstants.FIREFIGHTERS_INTERVAL_VALUES_MIN &&
+                threadId <= MatrixConstants.FIREFIGHTERS_INTERVAL_VALUES_MAX) {
 			listeners.notifyFireFighterRemovedListeners(x, y);
 			//firefighters.remove(threadId);
 		}
 
-		if(threadId >= 201 && threadId <= 300){
+		if(threadId >= MatrixConstants.REFUGEE_INTERVAL_VALUES_MIN &&
+                threadId <= MatrixConstants.REFUGEE_INTERVAL_VALUES_MAX){
 			listeners.notifyRefugeeRemovedListeners(x, y);
 			//listRefugees.remove(threadId);
 		}

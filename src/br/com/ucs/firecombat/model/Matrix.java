@@ -90,17 +90,26 @@ public class Matrix {
 			 * type 1 procura por fogo. type 2 procura por vitimas
 			 */
 			if (type == 1) {
-				if (matrix[newDestinyX][newDestinyY] >= 1 && matrix[newDestinyX][newDestinyY] <= 100) {
+				if (matrix[newDestinyX][newDestinyY] >= MatrixConstants.FIRE_INTERVAL_VALUES_MIN &&
+						matrix[newDestinyX][newDestinyY] <= MatrixConstants.FIRE_INTERVAL_VALUES_MAX) {
 					logger.info("findObjects() - found fire ");
 					return objectAddress;
 				}
 			} else if (type == 2) {
-				if (matrix[newDestinyX][newDestinyY] >= 101 && matrix[newDestinyX][newDestinyY] <= 200) {
+				if (matrix[newDestinyX][newDestinyY] >= MatrixConstants.REFUGEE_INTERVAL_VALUES_MIN &&
+						matrix[newDestinyX][newDestinyY] <= MatrixConstants.REFUGEE_INTERVAL_VALUES_MAX) {
 					logger.info("findObjects() - found vitima");
 					return objectAddress;
 				}
-			} else if (type == 5) {
-				if (matrix[newDestinyX][newDestinyY] >= 1 && matrix[newDestinyX][newDestinyY] <= 200) {
+			} else if(type == 3){
+				if (matrix[newDestinyX][newDestinyY] >= MatrixConstants.PARAMEDICS_INTERVAL_VALUES_MIN &&
+						matrix[newDestinyX][newDestinyY] <= MatrixConstants.PARAMEDICS_INTERVAL_VALUES_MAX) {
+					logger.info("findObjects() - found paramedics ");
+					return objectAddress;
+				}
+			}else if (type == 5) {
+				if (matrix[newDestinyX][newDestinyY] >= MatrixConstants.FIRE_INTERVAL_VALUES_MIN &&
+						matrix[newDestinyX][newDestinyY] <= MatrixConstants.PARAMEDICS_INTERVAL_VALUES_MAX) {
 					logger.info("findObjects() - found something");
 					return objectAddress;
 				}

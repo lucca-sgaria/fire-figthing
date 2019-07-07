@@ -5,6 +5,8 @@ import br.com.ucs.firecombat.constants.Params;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.Semaphore;
 
 public class Refugee extends Thread {
@@ -34,30 +36,30 @@ public class Refugee extends Thread {
 
         try {
             this.semWriteToMatrix.acquire();
-            while (true){
-                if(firstLocation()) break;
+            while (true) {
+                if (firstLocation()) break;
             }
             this.semWriteToMatrix.release();
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     @Override
-    public void run(){
-        for(;;){
+    public void run() {
+        for (; ;) {
             try {
                 // TODO: 30/06/19 metodo para andar aleatoriamente
                 semWriteToMatrix.acquire();
 
-                for(int i = 1; i <= MatrixConstants.REFUGEE_AMOUNT; i++){
+                for (int i = 1; i <= MatrixConstants.REFUGEE_AMOUNT; i++) {
 
                     //semWriteToMatrix.acquire();
 
-                    environment.cleanPosition(getX(),getY(),MatrixConstants.REFUGEE_INTERVAL_VALUES + i);
-                    while (true){
+                    environment.cleanPosition(getX(), getY(), MatrixConstants.REFUGEE_INTERVAL_VALUES_MAX + i);
+                    while (true) {
                         int[] nextStep = environment.getNextStep(x, y);
-                        if(nextStep[0] != -1) {
+                        if (nextStep[0] != -1) {
                             environment.cleanPosition(x, y, threadId);
                             this.x = nextStep[0];
                             this.y = nextStep[1];
@@ -69,11 +71,10 @@ public class Refugee extends Thread {
                     // procura fogo
                     // se achou muda estado
                     int[] obj = environment.findF(this);
-                    if(obj[2] >= 1 && obj[2] <=100){
+                    if (obj[2] >= 100 && obj[2] <= 200) {
+
                         System.out.println("está pegando fogo");
                     }
-
-
 
                 }
                 semWriteToMatrix.release();
@@ -85,7 +86,7 @@ public class Refugee extends Thread {
         }
     }
 
-    public boolean firstLocation(){
+    public boolean firstLocation() {
         int x = environment.generateRandom();
         int y = environment.generateRandom();
 
@@ -101,6 +102,18 @@ public class Refugee extends Thread {
         }
 
     }
+    public void putOutRefugee(Refugee refugee){
+        logger.info("putOutRefugee- refugee " + refugee.toString());
+
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                refugee.setLife(2);
+            }
+        },2500);
+    }
+
 
     public int getThreadId() {
         return threadId;
