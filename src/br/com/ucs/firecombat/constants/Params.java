@@ -11,4 +11,8 @@ public class Params {
     public static final String PATH_IMAGE_FIRE = "resources/fire.jpg";
     public static final String PATH_IMAGE_PARAMEDICS = "resources/paramedics.jpg";
     public static final String PATH_IMAGE_WHITE = "resources/white.jpg";
+
+    	public static final int ALIVE = 0;
+	public static final int VICTIM = 1;
+	public static final int DEAD = 3;
 }
