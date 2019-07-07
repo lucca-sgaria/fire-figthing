@@ -57,58 +57,13 @@ public class Fire extends Thread {
         }
     }
 
-//	@Override
-//	public void run() {
-//		try {
-//		logger.info("run()-"+this.toString());
-//		int iterations = 1;
-//
-//		while (true) {
-//			logger.info("run()-iteration-"+iterations+"-"+this.toString());
-//			if(life  > 0) {
-//				if(iterations == 1) {
-//					System.out.println("run()-"+threadId + " is waiting for a permit.");
-//					semWriteToMatrix.acquire();
-//					System.out.println("run()-"+threadId + " gets a permit.");
-//
-////					if(iterations > 1) {
-////						environment.cleanPosition(x, y, threadId);
-////						life = 5;
-////						logger.info("run()-life restored-"+this.toString());
-////					}
-//					while (true) {
-//						boolean inserted = changeLocation();
-//						if (inserted) {
-//							break;
-//						}
-//					}
-//					sleep(5000);
-//					logger.info("run()-thread-" +threadId + " releases the permit.");
-//					semWriteToMatrix.release();
-//				}
-//
-////				life--;
-//				iterations++;
-//				sleep(5000);
-//			} else {
-//				environment.cleanPosition(x, y, threadId);
-//				break;
-//			}
-//		}
-//
-//		} catch (InterruptedException e) {
-//			e.printStackTrace();
-//		}
-//		System.out.println("end ThreadId= " + threadId);
-//	}
-
-
     @Override
     public void run() {
         while (true) {
             try {
                 semFire.acquire();
                 if (life == 0) {
+                    sleep(3500);
                     semWriteToMatrix.acquire();
                     while (true) {
                         boolean inserted = changeLocation();
