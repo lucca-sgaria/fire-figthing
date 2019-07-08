@@ -5,11 +5,13 @@ import java.util.ResourceBundle;
 
 import br.com.ucs.firecombat.constants.Params;
 import br.com.ucs.firecombat.model.Enviroment;
+import br.com.ucs.firecombat.util.Chronometer;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
@@ -23,18 +25,41 @@ public class MainController implements Initializable {
 	@FXML
 	private Button start;
 
+	@FXML
+	private Label labelTimer;
+
+	@FXML
+	private Label labelDeads;
+
+	@FXML
+	private Label labelSaves;
+
+	@FXML
+	private Label labelFirefighter;
+
+	@FXML
+	private Label labelParamedics;
+
+
+
+	private static Chronometer chronometer = new Chronometer();
+
 //	private AppMain app = new AppMain();
 	private Enviroment env;
 
 	@FXML
 	void startClicked(ActionEvent event) {
+			chronometer.start();
 			env.start();
 	}
+
+
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 //		testShowImages();
 		env = new Enviroment();
+
 		
 		env.getListeners().registerFireAddedListener(fire -> {
 			System.out.println("going put a fire in x=" + fire.getX() + ",y=" + fire.getY());
