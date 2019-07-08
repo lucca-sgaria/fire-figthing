@@ -2,7 +2,7 @@ package br.com.ucs.firecombat.constants;
 
 public class Params {
 
-    public static final int REFUGEE_LIFE = 5;
+    public static final int REFUGEE_LIFE = 500;
 
     public static final boolean ENVI_PAINT_GRID = false;
     public static final String PATH_IMAGE_VICTIM = "resources/victim.jpg";

@@ -83,7 +83,7 @@ public class MainController implements Initializable {
 				public void run() {
 					removeImageInGrid(x, y);
 					if(state == Params.ALIVE) {
-						 
+						addRefugeeInGrid(x, y);
 					} else if(state == Params.VICTIM) {
 						addVictimInGrid(x, y);
 					}

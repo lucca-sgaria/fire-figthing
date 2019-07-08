@@ -109,17 +109,17 @@ public class Enviroment {
             fires.add(new Fire(i, null, semaphores.getSemWriteToMatrix(), this));
         }
 
-        for (int i = 0; i <= MatrixConstants.FIREFIGHTERSAMOUNT; i++) {
+        for (int i = 0; i < MatrixConstants.FIREFIGHTERSAMOUNT; i++) {
             firefighters.add(new Firefighter(i + MatrixConstants.FIREFIGHTERS_INTERVAL_VALUES_MIN,
                     semaphores.getSemWriteToMatrix(), this));
         }
 
-        for (int i = 0; i <= MatrixConstants.REFUGEE_AMOUNT; i++) {
+        for (int i = 0; i < MatrixConstants.REFUGEE_AMOUNT; i++) {
             listRefugees.add(new Refugee(i + MatrixConstants.REFUGEE_INTERVAL_VALUES_MIN,
                     semaphores.getSemWriteToMatrix(), this));
         }
 
-        for (int i = 0; i <= MatrixConstants.PARAMEDICS_AMOUNT; i++) {
+        for (int i = 0; i < MatrixConstants.PARAMEDICS_AMOUNT; i++) {
             listParamedics.add(new Paramedics(i + MatrixConstants.PARAMEDICS_INTERVAL_VALUES_MIN,
                     semaphores.getSemWriteToMatrix(), this));
         }
@@ -301,6 +301,13 @@ public class Enviroment {
     public void setListeners(Listeneres listeners) {
         this.listeners = listeners;
     }
-
+    public Refugee findRefugee(int i) {
+		for (Refugee refugee : listRefugees) {
+			if(refugee.getThreadId() == Long.valueOf(i)) {
+				return refugee;
+			}
+		}
+		return null;
+	}
 
 }

@@ -1,5 +1,7 @@
 package br.com.ucs.firecombat.model;
 
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.Semaphore;
 
 import org.apache.logging.log4j.LogManager;
@@ -18,16 +20,20 @@ public class Refugee extends Thread {
 	private Semaphore semWriteToMatrix;
 	private Enviroment environment;
 
+	private Semaphore semRefugee;
+
 	public Refugee(int threadId, int x, int y) {
 		this.threadId = threadId;
 		this.x = x;
 		this.y = y;
+		this.semRefugee = new Semaphore(1);
 	}
 
 	public Refugee(int threadId, Semaphore semWriteToMatrix, Enviroment enviroment) {
 		this.threadId = threadId;
 		this.environment = enviroment;
 		this.semWriteToMatrix = semWriteToMatrix;
+		this.semRefugee = new Semaphore(1);
 
 //		try {
 //			this.semWriteToMatrix.acquire();
@@ -88,20 +94,20 @@ public class Refugee extends Thread {
 		int iteracion = 1;
 		try {
 			while (true) {
-				
+				semRefugee.acquire();
 				System.out.println("run()-refugee-" + threadId + " is waiting for a permit.");
 				semWriteToMatrix.acquire();
 				System.out.println("run()-" + threadId + " gets a permit.");
 
 				while (true) {
-					if(iteracion == 1) {
+					if (iteracion == 1) {
 						boolean firstLocation = firstLocation();
 						if (firstLocation) {
 							break;
 						}
 					} else {
 						int[] nextStep = environment.getNextStep(x, y);
-						if(nextStep[0] != -1) {
+						if (nextStep[0] != -1) {
 							environment.cleanPosition(x, y, threadId);
 							this.x = nextStep[0];
 							this.y = nextStep[1];
@@ -110,25 +116,26 @@ public class Refugee extends Thread {
 						}
 					}
 				}
-				
-				if(this.stateRefugee == Params.ALIVE) {
+
+				if (this.stateRefugee == Params.ALIVE) {
 					int[] findF = environment.findF(this);
-					if(findF[2] > 0) {
+					if (findF[2] > 0) {
 						this.life--;
 						this.stateRefugee = Params.VICTIM;
 						environment.turnIntoVictim(this);
 					}
-				} else if(this.stateRefugee == Params.VICTIM) {
+				} else if (this.stateRefugee == Params.VICTIM) {
 					life--;
 				}
-				
-				if(life == 0) {
+
+				if (life == 0) {
 					environment.cleanPosition(x, y, threadId);
 					semWriteToMatrix.release();
 					break;
 				}
-				sleep(600);
 				semWriteToMatrix.release();
+				semRefugee.release();
+				sleep(600);
 				iteracion++;
 			}
 		} catch (InterruptedException e) {
@@ -194,10 +201,47 @@ public class Refugee extends Thread {
 		this.stateRefugee = stateRefugee;
 	}
 
+	public Semaphore getSemWriteToMatrix() {
+		return semWriteToMatrix;
+	}
+
+	public void setSemWriteToMatrix(Semaphore semWriteToMatrix) {
+		this.semWriteToMatrix = semWriteToMatrix;
+	}
+
+	public Enviroment getEnvironment() {
+		return environment;
+	}
+
+	public void setEnvironment(Enviroment environment) {
+		this.environment = environment;
+	}
+
+	public Semaphore getSemRefugee() {
+		return semRefugee;
+	}
+
+	public void setSemRefugee(Semaphore semRefugee) {
+		this.semRefugee = semRefugee;
+	}
+
 	@Override
 	public String toString() {
 		return "Refugee [threadId=" + threadId + ", x=" + x + ", y=" + y + ", life=" + life + ", stateRefugee="
 				+ stateRefugee + ", semWriteToMatrix=" + semWriteToMatrix + ", environment=" + environment + "]";
 	}
-	
+
+	public void save() throws InterruptedException {
+		logger.info("save-fire-" + this.toString());
+		sleep(5000);
+		stateRefugee = Params.ALIVE;
+		turnIntoVictim();
+		sleep(2000);
+		logger.info("save-fire-end" + this.toString());
+	}
+
+	protected void turnIntoVictim() {
+		this.environment.turnIntoVictim(this);
+	}
+
 }

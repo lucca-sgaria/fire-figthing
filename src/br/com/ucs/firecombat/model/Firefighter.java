@@ -4,6 +4,8 @@ import java.util.concurrent.Semaphore;
 
 import br.com.ucs.firecombat.constants.FirefighterState;
 import br.com.ucs.firecombat.constants.MatrixConstants;
+import br.com.ucs.firecombat.constants.Params;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -71,7 +73,8 @@ public class Firefighter extends Thread {
                     // procura fogo
                     // se achou muda estado
                     int[] obj = environment.findObject(this);
-                    System.out.println("obj " + obj[2]);
+                    System.out.println("ESSE OBJETO " + obj[2] + "-" + (obj[2] >= MatrixConstants.REFUGEE_INTERVAL_VALUES_MIN &&
+                            obj[2] <= MatrixConstants.REFUGEE_INTERVAL_VALUES_MAX));
                     if (obj[2] >= MatrixConstants.FIRE_INTERVAL_VALUES_MIN &&
                             obj[2] <= MatrixConstants.FIRE_INTERVAL_VALUES_MAX) {
                         // achou fogo
@@ -81,7 +84,15 @@ public class Firefighter extends Thread {
                         this.semFireFigther.acquire();
                     } else if (obj[2] >= MatrixConstants.REFUGEE_INTERVAL_VALUES_MIN &&
                             obj[2] <= MatrixConstants.REFUGEE_INTERVAL_VALUES_MAX) {
+                    	System.out.println("Killin victim");
                         //achou vitima
+                    	Refugee refugee = this.environment.findRefugee(obj[2]);
+                    	if(refugee.getStateRefugee() == Params.VICTIM) {
+                    		System.out.println("Killin victim IS IN REALITY A VICTIM" );
+                    		refugee.getSemRefugee().acquire();
+                        	refugee.save();
+                        	refugee.getSemRefugee().release();
+                    	}
                     }
                     sleep(600);
                     logger.info("run()-thread-" + threadId + " releases the permit.");
