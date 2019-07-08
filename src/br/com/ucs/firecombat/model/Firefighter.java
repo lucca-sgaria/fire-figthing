@@ -19,6 +19,8 @@ public class Firefighter extends Thread {
 
 	private Semaphore semFireFigther;
 
+
+
 	private Semaphore semWriteToMatrix;
 	private Enviroment environment;
 	private Refugee victim;
@@ -104,13 +106,22 @@ public class Firefighter extends Thread {
 				} else {
 					System.out.println("HERE BIATCHES " + iteraction);
 					int[] obj = environment.findParamedics(this);
-					if(obj[2] > 0) {
+					if(obj[2] >= MatrixConstants.PARAMEDICS_INTERVAL_VALUES_MIN && obj[2] <=
+							MatrixConstants.PARAMEDICS_INTERVAL_VALUES_MAX ) {
+
 						System.out.println("FOUNDEI PARAMEDICS");
 						Paramedics findParamedics = environment.findParamedics(obj[2]);
 						findParamedics.setVictim(victim);
+						findParamedics.setFirefighter(this);
+
+
+						// TODO: 08/07/19 teria que esperar paramedics liberar para depois o firefighter liberar
 						findParamedics.getSemParamedics().release();
+
 						this.stateFighter = FirefighterState.SEARCHING;
 						victim = null;
+
+						semFireFigther.acquire();
 					}
 				}
 				sleep(600);
@@ -178,9 +189,9 @@ public class Firefighter extends Thread {
 		return environment;
 	}
 
-	public void setSemFireFigtherRelease() {
-		this.semFireFigther.release();
-	}
+//	public void setSemFireFigtherRelease() {
+//		this.semFireFigther.release();
+//	}
 
 	public void setSemFireFigtherAcquire() {
 		try {
@@ -198,6 +209,10 @@ public class Firefighter extends Thread {
 	public String toString() {
 		return "Firefighter [threadId=" + threadId + ", x=" + x + ", y=" + y + ", state=" + getStateFighter()
 				+ ", semWriteToMatrix=" + semWriteToMatrix + ", environment=" + environment + "]";
+	}
+
+	public Semaphore getSemFireFigther() {
+		return semFireFigther;
 	}
 
 	public int getStateFighter() {

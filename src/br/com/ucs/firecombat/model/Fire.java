@@ -36,7 +36,7 @@ public class Fire extends Thread {
         this.threadId = threadId;
 //		this.main = main;
         this.semWriteToMatrix = semWriteToMatrix;
-        this.semFire = new Semaphore(1);
+        this.semFire = new Semaphore(0);
     }
 
     public Fire(int threadId, AppMain main, Semaphore semWriteToMatrix, Enviroment enviroment) {
@@ -71,6 +71,7 @@ public class Fire extends Thread {
                             break;
                         }
                     }
+                    setLife(5);
                     semWriteToMatrix.release();
                 }
             } catch (InterruptedException e) {
@@ -153,20 +154,14 @@ public class Fire extends Thread {
         this.life = life;
     }
 
-    public void putOutFire(Firefighter firefighter) {
+    public void putOutFire(Firefighter firefighter) throws InterruptedException {
         logger.info("putOutFire-fire-" + this.toString());
 
-        Timer timer = new Timer();
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                setLife(0);
-                environment.cleanPosition(getX(), getY(), getThreadId());
-                firefighter.setSemFireFigtherRelease();
-                semFire.release();
-            }
-        }, 5000);
-
+        setLife(0);
+        sleep(5000);
+        environment.cleanPosition(getX(), getY(), getThreadId());
+        firefighter.getSemFireFigther().release();
+        semFire.release();
 
         logger.info("putOutFire-fire-end-" + this.toString());
     }

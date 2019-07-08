@@ -17,14 +17,22 @@ public class Paramedics extends Thread {
 	private Semaphore semWriteToMatrix;
 	private Enviroment environment;
 
+
+
+
 	private Refugee victim;
+	private Firefighter firefighter;
 	private Semaphore semParamedics;
+	private Semaphore mutex;
 
 	public Paramedics(int threadId, Semaphore semWriteToMatrix, Enviroment environment) {
 		this.threadId = threadId;
 		this.semWriteToMatrix = semWriteToMatrix;
 		this.environment = environment;
 		this.semParamedics = new Semaphore(0);
+		this.mutex = new Semaphore(1);
+
+
 		try {
 			this.semWriteToMatrix.acquire();
 			while (true) {
@@ -42,16 +50,32 @@ public class Paramedics extends Thread {
 		try {
 			while (true) {
 				System.out.println("waiting");
+
+				//mutex para ser apenas uma thread por vez
+				mutex.acquire();
+
 				semParamedics.acquire();
+				//libera a thread da ambulancia q estava esperando o antendimento
+				firefighter.getSemFireFigther().release();
+
 				System.out.println("paramedics running");
 				environment.getListeners().notifyParamedicsWithVictim(getX(),getY());
-				sleep(6000);
+				sleep(10000);
 				victim.setStateRefugee(Params.ALIVE);
+
+				//thread para a escrita na matriz
+				semWriteToMatrix.acquire();
 				victim.firstLocation();
+				semWriteToMatrix.release();
+
+				//libera thread do refugee
 				victim.getSemRefugee().release();
 				victim = null;
 				environment.getListeners().notifyParamedicsAddedListeners(this);
-				semParamedics.release();
+
+				//permite entrar de novo
+				mutex.release();
+//				semParamedics.release();
 			}
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
@@ -110,6 +134,14 @@ public class Paramedics extends Thread {
 
 	public Enviroment getEnvironment() {
 		return environment;
+	}
+
+	public Firefighter getFirefighter() {
+		return firefighter;
+	}
+
+	public void setFirefighter(Firefighter firefighter) {
+		this.firefighter = firefighter;
 	}
 
 	public void setEnvironment(Enviroment environment) {
