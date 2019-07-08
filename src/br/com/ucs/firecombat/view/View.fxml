@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
@@ -35,5 +36,15 @@
         </rowConstraints>
       </GridPane>
       <Button fx:id="start" layoutX="14.0" layoutY="33.0" mnemonicParsing="false" onAction="#startClicked" text="Start" />
+      <Label fx:id="labelTimer" layoutX="721.0" layoutY="14.0" text="00:00:00" />
+      <Label layoutX="655.0" layoutY="14.0" text="Tempo:" />
+      <Label layoutX="137.0" layoutY="14.0" text="Salvos:" />
+      <Label layoutX="136.0" layoutY="38.0" text="Mortos:" />
+      <Label fx:id="labelSaves" layoutX="200.0" layoutY="14.0" text="5" />
+      <Label fx:id="labelDeads" layoutX="200.0" layoutY="38.0" text="2" />
+      <Label layoutX="326.0" layoutY="14.0" text="Ambulancias:" />
+      <Label fx:id="labelParamedics" layoutX="432.0" layoutY="14.0" text="3" />
+      <Label layoutX="325.0" layoutY="38.0" text="Bombeiros:" />
+      <Label fx:id="labelFirefighter" layoutX="432.0" layoutY="38.0" text="5" />
    </children>
 </AnchorPane>
