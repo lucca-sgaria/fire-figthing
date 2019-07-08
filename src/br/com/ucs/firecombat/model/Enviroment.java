@@ -230,6 +230,20 @@ public class Enviroment {
         logger.info("findF()-object-end-x=" + obj[0] + ",y=" + obj[1] + ",id=" + obj[2]);
         return obj;
     }
+    
+    public int[] findParamedics(Firefighter Firefighter) {
+        logger.info("findObjectaaaaaaaaa()-firefighter-" + Firefighter.toString());
+        int[] obj = matrix.findObjects(Firefighter.getX(), Firefighter.getY(), 3);
+
+        if (obj[2] == Firefighter.getThreadId()) {
+            obj[0] = 0;
+            obj[1] = 0;
+            obj[2] = 0;
+        }
+
+        logger.info("findF()-object-end-x=" + obj[0] + ",y=" + obj[1] + ",id=" + obj[2]);
+        return obj;
+    }
 
     public int[] getNextStep(int x, int y) {
         logger.info("getNextStep()-x=" + x + ",y=" + y);
@@ -309,5 +323,13 @@ public class Enviroment {
 		}
 		return null;
 	}
+    public Paramedics findParamedics(int i) {
+ 		for (Paramedics p : listParamedics) {
+ 			if(p.getThreadId() == Long.valueOf(i)) {
+ 				return p;
+ 			}
+ 		}
+ 		return null;
+ 	}
 
 }

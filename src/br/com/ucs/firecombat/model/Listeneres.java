@@ -17,7 +17,10 @@ public class Listeneres {
 
 	private List<ParamedicAddedListener> addedParamedicsListener = new ArrayList<>();
 	private List<ParamedicRemovedListener> removedParamedicsListener = new ArrayList<>();
-private List<RefugeeTurnedListener> refugeeTurnedListener = new ArrayList<>();
+	private List<RefugeeTurnedListener> refugeeTurnedListener = new ArrayList<>();
+	private List<FireFighterTurnedWithVictimListener> firefighterTurnedWithVictimListener= new ArrayList<>();
+	private List<ParamedicsWithVictimListener> paramedicsWithVictimListener= new ArrayList<>();
+
 	protected void notifyFireAddedListeners(Fire fire) {
 		this.addedFireListeners.forEach(listener -> listener.onFireAdded(fire));
 	}
@@ -49,7 +52,6 @@ private List<RefugeeTurnedListener> refugeeTurnedListener = new ArrayList<>();
 	public void registerFireFighterRemovedListener(FireFighterRemovedListener listener) {
 		this.removedFireFighterListeners.add(listener);
 	}
-
 
 	protected void notifyRefugeeAddedListeners(Refugee refugee) {
 		this.addedRefugeeListener.forEach(listener -> listener.onRefugeeAdd(refugee));
@@ -87,9 +89,27 @@ private List<RefugeeTurnedListener> refugeeTurnedListener = new ArrayList<>();
 		this.refugeeTurnedListener.add(listener);
 	}
 
-
 	public void notifyRefugeeTurnedListeners(Refugee refugee) {
-		this.refugeeTurnedListener.forEach(listener -> listener.onRefugeeTurned(refugee.getX(), refugee.getY(), refugee.getStateRefugee()));
+		this.refugeeTurnedListener.forEach(
+				listener -> listener.onRefugeeTurned(refugee.getX(), refugee.getY(), refugee.getStateRefugee()));
+	}
+
+	public void notifyFirefighterWithVictim(Firefighter firefighter) {
+		this.firefighterTurnedWithVictimListener
+				.forEach(listener -> listener.onfirefighterTurnedWithVictim(firefighter.getX(), firefighter.getY()));
+	}
+
+	public void registerFirefighterWithVictimListener(FireFighterTurnedWithVictimListener listener) {
+		this.firefighterTurnedWithVictimListener.add(listener);
+	}
+
+	public void notifyParamedicsWithVictim(int x, int y) {
+		this.paramedicsWithVictimListener
+		.forEach(listener -> listener.onParamedicsWithVictim(x, y));
+	}
+	
+	public void registerParamedicsWithVictimListener(ParamedicsWithVictimListener listener) {
+		this.paramedicsWithVictimListener.add(listener);
 	}
 
 }

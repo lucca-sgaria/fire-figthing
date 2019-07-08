@@ -3,6 +3,7 @@ package br.com.ucs.firecombat.view;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import br.com.ucs.firecombat.constants.FirefighterState;
 import br.com.ucs.firecombat.constants.Params;
 import br.com.ucs.firecombat.model.Enviroment;
 import javafx.application.Platform;
@@ -61,7 +62,11 @@ public class MainController implements Initializable {
 			Platform.runLater(new Runnable() {
 				@Override
 				public void run() {
-					addFirefighterInGrid(firefighter.getX(), firefighter.getY());
+					if(firefighter.getStateFighter() == FirefighterState.WITHVICTIM) {
+						addFirefighter2InGrid(firefighter.getX(), firefighter.getY());
+					} else {
+						addFirefighterInGrid(firefighter.getX(), firefighter.getY());
+					}
 				}
 			});
 		});
@@ -88,8 +93,28 @@ public class MainController implements Initializable {
 						addVictimInGrid(x, y);
 					}
 				}
-
-			
+			});
+		});
+		
+		env.getListeners().registerFirefighterWithVictimListener((x,y) -> {
+			System.out.println("going to turn a firefighter in x=" + x + ",y=" + y);
+			Platform.runLater(new Runnable() {
+				@Override
+				public void run() {
+					removeImageInGrid(x, y);
+					addFirefighter2InGrid(x, y);
+				}
+			});
+		});
+		
+		env.getListeners().registerParamedicsWithVictimListener((x,y) -> {
+			System.out.println("going to turn a paramedics in x=" + x + ",y=" + y);
+			Platform.runLater(new Runnable() {
+				@Override
+				public void run() {
+					removeImageInGrid(x, y);
+					addParamedics2InGrid(x, y);
+				}
 			});
 		});
 		
@@ -105,6 +130,7 @@ public class MainController implements Initializable {
 
 		env.getListeners().registerParamedicsAddedListener(paramedics -> {
 				Platform.runLater(() -> {
+					System.out.println("ADDING PARAMEDIC");
 					addParamedicsInGrid(paramedics.getX(), paramedics.getY());
 				});
 		});
@@ -117,6 +143,13 @@ public class MainController implements Initializable {
 
 
 	}
+	protected void addFirefighter2InGrid(int x, int y) {
+		Image imageFireFighter = new Image(Params.PATH_IMAGE_FIREFIGHTER2);
+		ImageView imageView = new ImageView(imageFireFighter);
+		grid.add(imageView, y, x);
+		System.out.println("adde firefighter2 in the grid");
+	}
+
 	private void removeImageInGrid(int x, int y) {
 		ImageView whiteImageView = getWhiteImageView();
 		grid.add(whiteImageView, y, x);
@@ -150,6 +183,14 @@ public class MainController implements Initializable {
 		grid.add(imageView, y, x);
 		System.out.println("put paramedics in the grid");
 	}
+	
+	protected void addParamedics2InGrid(int x, int y) {
+		Image imageRefugee = new Image(Params.PATH_IMAGE_PARAMEDICS2);
+		ImageView imageView = new ImageView(imageRefugee);
+		grid.add(imageView, y, x);
+		System.out.println("put paramedics in the grid");
+	}
+
 
 	public ImageView getWhiteImageView() {
 		Image imageWhite = new Image(Params.PATH_IMAGE_WHITE);

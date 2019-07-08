@@ -3,108 +3,139 @@ package br.com.ucs.firecombat.model;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import br.com.ucs.firecombat.constants.Params;
+
 import java.util.concurrent.Semaphore;
 
 public class Paramedics extends Thread {
-    private static final Logger logger =
-            LogManager.getLogger(Firefighter.class);
+	private static final Logger logger = LogManager.getLogger(Firefighter.class);
 
-    private int threadId;
-    private int x;
-    private int y;
+	private int threadId;
+	private int x;
+	private int y;
 
-    private Semaphore semWriteToMatrix;
-    private Enviroment environment;
+	private Semaphore semWriteToMatrix;
+	private Enviroment environment;
 
-    public Paramedics(int threadId, Semaphore semWriteToMatrix, Enviroment environment){
-        this.threadId = threadId;
-        this.semWriteToMatrix = semWriteToMatrix;
-        this.environment = environment;
+	private Refugee victim;
+	private Semaphore semParamedics;
 
-        try {
-            this.semWriteToMatrix.acquire();
-            while (true){
-                if(firstLocation()) break;
-            }
-            this.semWriteToMatrix.release();
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-    }
+	public Paramedics(int threadId, Semaphore semWriteToMatrix, Enviroment environment) {
+		this.threadId = threadId;
+		this.semWriteToMatrix = semWriteToMatrix;
+		this.environment = environment;
+		this.semParamedics = new Semaphore(0);
+		try {
+			this.semWriteToMatrix.acquire();
+			while (true) {
+				if (firstLocation())
+					break;
+			}
+			this.semWriteToMatrix.release();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
-    @Override
-    public void run() {
+	@Override
+	public void run() {
+		try {
+			while (true) {
+				System.out.println("waiting");
+				semParamedics.acquire();
+				System.out.println("paramedics running");
+				environment.getListeners().notifyParamedicsWithVictim(getX(),getY());
+				sleep(6000);
+				victim.setStateRefugee(Params.ALIVE);
+				victim.firstLocation();
+				victim.getSemRefugee().release();
+				victim = null;
+				environment.getListeners().notifyParamedicsAddedListeners(this);
+				semParamedics.release();
+			}
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
-        super.run();
-    }
+	public boolean firstLocation() {
+		int x = environment.generateRandom();
+		int y = environment.generateRandom();
 
+		if (!environment.existsIn(x, y)) {
+			this.x = x;
+			this.y = y;
 
-    public boolean firstLocation(){
-        int x = environment.generateRandom();
-        int y = environment.generateRandom();
+			environment.insertParamedics(this);
+			return true;
+		} else {
+			System.out.println("Something already in x=" + x + ";y=" + y);
+			return false;
+		}
 
-        if (!environment.existsIn(x, y)) {
-            this.x = x;
-            this.y = y;
+	}
 
-            environment.insertParamedics(this);
-            return true;
-        } else {
-            System.out.println("Something already in x=" + x + ";y=" + y);
-            return false;
-        }
+	public int getThreadId() {
+		return threadId;
+	}
 
-    }
+	public void setThreadId(int threadId) {
+		this.threadId = threadId;
+	}
 
-    public int getThreadId() {
-        return threadId;
-    }
+	public int getX() {
+		return x;
+	}
 
-    public void setThreadId(int threadId) {
-        this.threadId = threadId;
-    }
+	public void setX(int x) {
+		this.x = x;
+	}
 
-    public int getX() {
-        return x;
-    }
+	public int getY() {
+		return y;
+	}
 
-    public void setX(int x) {
-        this.x = x;
-    }
+	public void setY(int y) {
+		this.y = y;
+	}
 
-    public int getY() {
-        return y;
-    }
+	public Semaphore getSemWriteToMatrix() {
+		return semWriteToMatrix;
+	}
 
-    public void setY(int y) {
-        this.y = y;
-    }
+	public void setSemWriteToMatrix(Semaphore semWriteToMatrix) {
+		this.semWriteToMatrix = semWriteToMatrix;
+	}
 
-    public Semaphore getSemWriteToMatrix() {
-        return semWriteToMatrix;
-    }
+	public Enviroment getEnvironment() {
+		return environment;
+	}
 
-    public void setSemWriteToMatrix(Semaphore semWriteToMatrix) {
-        this.semWriteToMatrix = semWriteToMatrix;
-    }
+	public void setEnvironment(Enviroment environment) {
+		this.environment = environment;
+	}
 
-    public Enviroment getEnvironment() {
-        return environment;
-    }
+	@Override
+	public String toString() {
+		return "Paramedics{" + "threadId=" + threadId + ", x=" + x + ", y=" + y + ", semWriteToMatrix="
+				+ semWriteToMatrix + ", environment=" + environment + '}';
+	}
 
-    public void setEnvironment(Enviroment environment) {
-        this.environment = environment;
-    }
+	public Refugee getVictim() {
+		return victim;
+	}
 
-    @Override
-    public String toString() {
-        return "Paramedics{" +
-                "threadId=" + threadId +
-                ", x=" + x +
-                ", y=" + y +
-                ", semWriteToMatrix=" + semWriteToMatrix +
-                ", environment=" + environment +
-                '}';
-    }
+	public void setVictim(Refugee victim) {
+		this.victim = victim;
+	}
+
+	public Semaphore getSemParamedics() {
+		return semParamedics;
+	}
+
+	public void setSemParamedics(Semaphore semParamedics) {
+		this.semParamedics = semParamedics;
+	}
 
 }

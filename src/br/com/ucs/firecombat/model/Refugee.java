@@ -7,6 +7,7 @@ import java.util.concurrent.Semaphore;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import br.com.ucs.firecombat.constants.MatrixConstants;
 import br.com.ucs.firecombat.constants.Params;
 
 public class Refugee extends Thread {
@@ -119,7 +120,7 @@ public class Refugee extends Thread {
 
 				if (this.stateRefugee == Params.ALIVE) {
 					int[] findF = environment.findF(this);
-					if (findF[2] > 0) {
+					if (findF[2] >= MatrixConstants.FIRE_INTERVAL_VALUES_MIN && findF[2] <= MatrixConstants.FIRE_INTERVAL_VALUES_MAX) {
 						this.life--;
 						this.stateRefugee = Params.VICTIM;
 						environment.turnIntoVictim(this);
@@ -231,17 +232,17 @@ public class Refugee extends Thread {
 				+ stateRefugee + ", semWriteToMatrix=" + semWriteToMatrix + ", environment=" + environment + "]";
 	}
 
-	public void save() throws InterruptedException {
-		logger.info("save-fire-" + this.toString());
-		sleep(5000);
-		stateRefugee = Params.ALIVE;
-		turnIntoVictim();
-		sleep(2000);
-		logger.info("save-fire-end" + this.toString());
-	}
+//	public void save() throws InterruptedException {
+//		logger.info("save-fire-" + this.toString());
+//		sleep(5000);
+//		stateRefugee = Params.ALIVE;
+//		turnIntoVictim();
+//		sleep(2000);
+//		logger.info("save-fire-end" + this.toString());
+//	}
 
-	protected void turnIntoVictim() {
-		this.environment.turnIntoVictim(this);
-	}
+//	protected void turnIntoVictim() {
+//		this.environment.turnIntoVictim(this);
+//	}
 
 }
