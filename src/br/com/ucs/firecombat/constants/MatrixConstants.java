@@ -4,9 +4,9 @@ public class MatrixConstants {
 
 	public static final int MATRIXSIZE = 10;
 	public static final int FIREAMOUNT = 5;
-	public static final int FIREFIGHTERSAMOUNT = 5;
-	public static final int REFUGEE_AMOUNT = 6;
-	public static final int PARAMEDICS_AMOUNT = 3;
+	public static final int FIREFIGHTERSAMOUNT = 3;
+	public static final int REFUGEE_AMOUNT = 4;
+	public static final int PARAMEDICS_AMOUNT = 2;
 
 	public static final int FIRE_INTERVAL_VALUES_MIN = 1;
 	public static final int FIRE_INTERVAL_VALUES_MAX = 100;

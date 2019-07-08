@@ -1,7 +1,5 @@
 package br.com.ucs.firecombat.model;
 
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.Semaphore;
 
 import org.apache.logging.log4j.LogManager;

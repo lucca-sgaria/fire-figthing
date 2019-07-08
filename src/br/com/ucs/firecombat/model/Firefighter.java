@@ -111,9 +111,10 @@ public class Firefighter extends Thread {
 
 						System.out.println("FOUNDEI PARAMEDICS");
 						Paramedics findParamedics = environment.findParamedics(obj[2]);
+						findParamedics.getMutexParamedics().acquire();
+
 						findParamedics.setVictim(victim);
 						findParamedics.setFirefighter(this);
-
 
 						// TODO: 08/07/19 teria que esperar paramedics liberar para depois o firefighter liberar
 						findParamedics.getSemParamedics().release();
